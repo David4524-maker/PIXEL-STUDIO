@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL STUDIO - Editor de Pixel Art</title>
+<style>
+:root {
+    --bg-green: #1ba34a;
+    --btn-gray: #d3d3d3;
+    --btn-hover: #bfbfbf;
+}
+* { box-sizing: border-box; }
+html, body {
+    margin: 0; padding: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg-green);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    color: #000;
+}
+
+/* HEADER */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    flex-shrink: 0;
+    gap: 20px;
+}
+.logo-container { display: flex; align-items: center; gap: 15px; }
+.logo {
+    font-family: 'Arial Black', Impact, sans-serif;
+    font-size: 50px;
+    letter-spacing: -4px;
+    display: flex;
+    line-height: 1;
+}
+.logo span:nth-child(1) { color: #000; }
+.logo span:nth-child(2) { color: #fcaec4; }
+.logo span:nth-child(3) { color: #ffd700; }
+.logo span:nth-child(4) { color: #a0522d; }
+.logo span:nth-child(5) { color: #dc143c; }
+.subtitle {
+    font-size: 26px;
+    font-style: italic;
+    color: #a0e6ff;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.header-right { text-align: center; }
+.header-right h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+/* CONTADOR DE COLORES */
+.colors-counter {
+    background: #000;
+    color: #ffd700;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border: 2px solid #ffd700;
+    min-width: 40px;
+    justify-content: center;
+    transition: transform 0.15s, background 0.3s;
+}
+.colors-counter.bump {
+    transform: scale(1.25);
+    background: #ffd700;
+    color: #000;
+}
+.colors-counter::before {
+    content: '🎨';
+    font-size: 11px;
+}
+.color-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #dc143c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 2px 0;
+}
+.color-box-indicator {
+    width: 26px; height: 26px;
+    background: white;
+    border: 3px solid #000;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+.color-box-indicator:hover { transform: scale(1.1); }
+.header-right h3 { margin: 0; font-size: 15px; color: #000; }
+
+/* MAIN LAYOUT */
+main {
+    display: flex;
+    flex: 1;
+    padding: 0 15px;
+    gap: 10px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* PANELS */
+.panel {
+    background: rgba(255,255,255,0.18);
+    border-radius: 6px;
+    padding: 6px;
+    margin-bottom: 6px;
+}
+.panel-title {
+    font-size: 10px;
+    color: #fff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    opacity: 0.95;
+}
+
+/* LEFT SIDEBAR */
+.left-tools {
+    width: 230px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding-right: 3px;
+}
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+}
+.tool-btn {
+    aspect-ratio: 1;
+    background: var(--btn-gray);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+    line-height: 1;
+}
+.tool-btn:hover { background: var(--btn-hover); }
+.tool-btn.active {
+    background: #fff;
+    border-color: #000;
+    box-shadow: 0 0 0 2px #ffd700;
+}
+.btn-row {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+}
+.btn-sm {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 4px;
+    background: var(--btn-gray);
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+.btn-sm:hover { background: var(--btn-hover); }
+.btn-sm.active { background: #ffd700; box-shadow: inset 0 0 0 2px #000; }
+.btn-block {
+    width: 100%;
+    padding: 8px;
+    background: var(--btn-gray);
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-block:hover { background: var(--btn-hover); }
+.btn-block.save { color: #a0522d; }
+.btn-block.load { color: #d4a500; }
+.btn-block.share { color: #4169e1; }
+.btn-block.clear { color: #dc143c; }
+
+/* CENTER */
+.center-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    gap: 8px;
+}
+.canvas-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+}
+.canvas-container {
+    background: #fff;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    position: relative;
+    max-height: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+canvas {
+    width: 100%; height: 100%;
+    image-rendering: pixelated;
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+}
+.zoom-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #fff;
+    font-weight: bold;
+}
+.zoom-controls button {
+    background: var(--btn-gray);
+    border: none;
+    border-radius: 3px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.preview-box {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #fff;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    image-rendering: pixelated;
+    z-index: 5;
+}
+.preview-label {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-size: 10px;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* RIGHT SIDEBAR */
+.right-tools {
+    width: 200px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding-left: 3px;
+}
+.grid-sizes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+}
+.grid-btn {
+    padding: 8px 4px;
+    background: var(--btn-gray);
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Arial Black', sans-serif;
+}
+.grid-btn:hover { background: var(--btn-hover); }
+.grid-btn.active {
+    background: #fff;
+    box-shadow: inset 0 0 0 2px #000;
+}
+.custom-size {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+}
+.custom-size input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    font-size: 12px;
+    width: 0;
+}
+.custom-size button {
+    padding: 5px 8px;
+    background: var(--btn-gray);
+    border: none;
+    border-radius: 3px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 11px;
+}
+.color-actions {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 5px;
+}
+.hex-input {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+    font-size: 12px;
+    text-align: center;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+.recent-colors {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3px;
+    margin-top: 4px;
+}
+.color-swatch {
+    aspect-ratio: 1;
+    border: 2px solid #000;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.color-swatch:hover { transform: scale(1.15); }
+.palette {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+}
+.palette .color-swatch {
+    border-width: 1px;
+    border-radius: 2px;
+}
+.color-current-pair {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+}
+.color-preview-big {
+    width: 40px; height: 40px;
+    border: 3px solid #000;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.color-preview-small {
+    width: 28px; height: 28px;
+    border: 2px solid #000;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.swap-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #fff;
+    padding: 0;
+}
+
+/* STATUS BAR */
+.status-bar {
+    background: rgba(0,0,0,0.25);
+    padding: 4px 15px;
+    font-size: 12px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    font-family: monospace;
+}
+.status-bar span { margin-right: 15px; }
+.status-bar .hint { opacity: 0.7; font-family: Arial; }
+
+/* TOAST */
+.toast-container {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+    pointer-events: none;
+}
+.toast {
+    background: #000;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.2s forwards;
+    opacity: 0.95;
+    border-left: 4px solid #ffd700;
+}
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toastOut {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateY(20px); }
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.modal h2 { margin: 0 0 10px; color: #1ba34a; }
+.modal h3 { margin: 15px 0 5px; color: #333; border-bottom: 2px solid #1ba34a; padding-bottom: 3px; }
+.modal ul { margin: 5px 0; padding-left: 20px; }
+.modal li { margin: 3px 0; font-size: 13px; }
+.modal kbd {
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: monospace;
+    font-size: 12px;
+    box-shadow: 0 1px 0 #999;
+}
+.modal-close {
+    background: #1ba34a;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.5); }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <div class="logo">
+            <span>P</span><span>I</span><span>X</span><span>E</span><span>L</span>
+        </div>
+        <div class="subtitle">STUDIO</div>
+    </div>
+    <div class="header-right">
+        <h2>
+            MIS COLORES
+            <span class="colors-counter" id="colorsCounter" title="Colores únicos en el dibujo">0</span>
+        </h2>
+        <div class="color-title">
+            COLOR <div class="color-box-indicator" id="headerColorIndicator" title="Elegir color"></div>
+        </div>
+        <h3>Crea tu Sprite aqui</h3>
+    </div>
+</header>
+
+<main>
+    <!-- ============ LEFT SIDEBAR ============ -->
+    <aside class="left-tools">
+        <div class="panel">
+            <div class="panel-title">Herramientas</div>
+            <div class="tool-grid">
+                <button class="tool-btn active" data-tool="pencil" title="Lápiz (B)">✏️</button>
+                <button class="tool-btn" data-tool="eraser" title="Borrador (E)">🧽</button>
+                <button class="tool-btn" data-tool="fill" title="Relleno (G)">🪣</button>
+                <button class="tool-btn" data-tool="eyedropper" title="Cuentagotas (I)">💧</button>
+                <button class="tool-btn" data-tool="line" title="Línea (L)">╱</button>
+                <button class="tool-btn" data-tool="rect" title="Rectángulo (R)">▭</button>
+                <button class="tool-btn" data-tool="frect" title="Rectángulo relleno (F)">▬</button>
+                <button class="tool-btn" data-tool="circle" title="Círculo (C)">○</button>
+                <button class="tool-btn" data-tool="fcircle" title="Círculo relleno (V)">●</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Historial y Simetría</div>
+            <div class="btn-row">
+                <button class="btn-sm" id="undoBtn" title="Deshacer (Ctrl+Z)">↶ Deshacer</button>
+                <button class="btn-sm" id="redoBtn" title="Rehacer (Ctrl+Y)">↷ Rehacer</button>
+            </div>
+            <div class="btn-row" style="margin-top:3px;">
+                <button class="btn-sm" id="mirrorXBtn" title="Simetría horizontal">↔ Sim.X</button>
+                <button class="btn-sm" id="mirrorYBtn" title="Simetría vertical">↕ Sim.Y</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Transformar</div>
+            <div class="btn-row">
+                <button class="btn-sm" id="flipHBtn" title="Voltear horizontal">⇄</button>
+                <button class="btn-sm" id="flipVBtn" title="Voltear vertical">⇅</button>
+                <button class="btn-sm" id="rotateBtn" title="Rotar 90°">↻</button>
+                <button class="btn-sm" id="invertBtn" title="Invertir colores">🎨</button>
+            </div>
+            <div class="btn-row" style="margin-top:3px;">
+                <button class="btn-sm" id="shiftLeft" title="Mover izquierda">←</button>
+                <button class="btn-sm" id="shiftUp" title="Mover arriba">↑</button>
+                <button class="btn-sm" id="shiftDown" title="Mover abajo">↓</button>
+                <button class="btn-sm" id="shiftRight" title="Mover derecha">→</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Archivo</div>
+            <button class="btn-block save" id="saveBtn">GUARDAR PNG 💾</button>
+            <button class="btn-block save" id="saveTransparentBtn">PNG SIN FONDO 🔲</button>
+            <button class="btn-block save" id="saveJsonBtn">PROYECTO (.json) 📄</button>
+            <button class="btn-block load" id="loadBtn">CARGAR IMAGEN ⬆️</button>
+            <button class="btn-block load" id="loadJsonBtn">CARGAR PROYECTO 📂</button>
+            <button class="btn-block share" id="shareBtn">COMPARTIR URL 🔗</button>
+            <button class="btn-block share" id="copyBtn">COPIAR IMAGEN 📋</button>
+            <button class="btn-block clear" id="clearBtn">BORRAR TODO 🗑️</button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Extras</div>
+            <div class="btn-row">
+                <button class="btn-sm" id="helpBtn" title="Ayuda">❓ Ayuda</button>
+                <button class="btn-sm" id="soundBtn" title="Sonidos">🔊</button>
+                <button class="btn-sm" id="fullscreenBtn" title="Pantalla completa">⛶</button>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+        <input type="file" id="jsonInput" accept=".json,application/json" style="display:none">
+    </aside>
+
+    <!-- ============ CENTER ============ -->
+    <div class="center-col">
+        <div class="canvas-wrapper">
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="pixelCanvas" width="640" height="640"></canvas>
+                <div class="preview-box" style="display:none;" id="previewBox">
+                    <div class="preview-label">VISTA 1:1</div>
+                    <canvas id="previewCanvas" width="64" height="64"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="zoom-controls">
+            <button id="zoomOut" title="Zoom -">−</button>
+            <span>Zoom: <span id="zoomLabel">100%</span></span>
+            <button id="zoomIn" title="Zoom +">+</button>
+            <button id="zoomReset" title="Restablecer zoom">⟲</button>
+            <button id="toggleGridBtn" class="active" title="Mostrar/ocultar cuadrícula">▦ Cuadrícula</button>
+            <button id="togglePreviewBtn" title="Vista previa 1:1">👁 Preview</button>
+        </div>
+    </div>
+
+    <!-- ============ RIGHT SIDEBAR ============ -->
+    <aside class="right-tools">
+        <div class="panel">
+            <div class="panel-title">Resolución</div>
+            <div class="grid-sizes">
+                <button class="grid-btn" data-size="8">8</button>
+                <button class="grid-btn" data-size="16">16</button>
+                <button class="grid-btn" data-size="24">24</button>
+                <button class="grid-btn" data-size="32">32</button>
+                <button class="grid-btn" data-size="48">48</button>
+                <button class="grid-btn" data-size="64">64</button>
+            </div>
+            <div class="custom-size">
+                <input type="number" id="customSizeInput" placeholder="Ej: 20" min="2" max="128">
+                <button id="applyCustomSize">OK</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Color</div>
+            <div class="color-current-pair">
+                <div class="color-preview-big" id="colorDisplay" title="Color actual"></div>
+                <button class="swap-btn" id="swapColorsBtn" title="Intercambiar colores (X)">⇄</button>
+                <div class="color-preview-small" id="secondaryColorDisplay" title="Color secundario (click derecho = borrar)"></div>
+            </div>
+            <input type="color" id="colorPicker" value="#ffd700" style="display:none">
+            <input type="text" class="hex-input" id="hexInput" value="#FFD700" maxlength="7" title="Código HEX">
+            <div class="btn-row" style="margin-top:4px;">
+                <button class="btn-sm" id="randomColorBtn" title="Color aleatorio">🎲</button>
+                <button class="btn-sm" id="copyHexBtn" title="Copiar HEX">📋</button>
+            </div>
+            <div class="panel-title" style="margin-top:6px;">Recientes</div>
+            <div class="recent-colors" id="recentColors"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Paleta PICO-8</div>
+            <div class="palette" id="palette"></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Vista</div>
+            <div class="btn-row">
+                <button class="btn-sm" id="clearRecentBtn" title="Limpiar recientes">🗑 Recientes</button>
+                <button class="btn-sm" id="clearLocalBtn" title="Borrar autoguardado">🗑 Autoguardado</button>
+            </div>
+        </div>
+    </aside>
+</main>
+
+<div class="status-bar">
+    <div>
+        <span id="coordLabel">x: -, y: -</span>
+        <span id="toolLabel">Herramienta: Lápiz</span>
+        <span id="sizeLabel">Lienzo: 32×32</span>
+    </div>
+    <div class="hint">Ctrl+Z: deshacer · B/E/G/I: herramientas · 1-6: tamaño · X: swap</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="modal-overlay" id="helpModal">
+    <div class="modal">
+        <h2>🎨 Ayuda de Pixel Studio</h2>
+        <h3>Herramientas</h3>
+        <ul>
+            <li><b>Lápiz (B)</b>: Dibuja píxeles uno a uno</li>
+            <li><b>Borrador (E)</b>: Borra píxeles</li>
+            <li><b>Relleno (G)</b>: Rellena zonas del mismo color</li>
+            <li><b>Cuentagotas (I)</b>: Toma color de un píxel</li>
+            <li><b>Línea (L)</b>, <b>Rectángulo (R/F)</b>, <b>Círculo (C/V)</b></li>
+        </ul>
+        <h3>Atajos de teclado</h3>
+        <ul>
+            <li><kbd>Ctrl</kbd>+<kbd>Z</kbd>: Deshacer · <kbd>Ctrl</kbd>+<kbd>Y</kbd>: Rehacer</li>
+            <li><kbd>B</kbd>/<kbd>E</kbd>/<kbd>G</kbd>/<kbd>I</kbd>/<kbd>L</kbd>/<kbd>R</kbd>/<kbd>C</kbd>: Herramientas</li>
+            <li><kbd>1</kbd>-<kbd>6</kbd>: Cambiar tamaño de lienzo</li>
+            <li><kbd>X</kbd>: Intercambiar colores</li>
+            <li><kbd>+</kbd>/<kbd>-</kbd>: Zoom · <kbd>0</kbd>: Reset</li>
+        </ul>
+        <button class="modal-close" id="closeHelp">Cerrar</button>
+    </div>
+</div>
+
+<script>
+/* ==========================================================
+   PIXEL STUDIO — Editor completo
+   ========================================================== */
+
+const state = {
+    gridSize: 32,
+    currentColor: '#ffd700',
+    secondaryColor: '#000000',
+    tool: 'pencil',
+    showGrid: true,
+    mirrorX: false,
+    mirrorY: false,
+    zoom: 1,
+    recentColors: [],
+    soundOn: true,
+    showPreview: false
+};
+
+const PICO8_PALETTE = [
+    '#000000','#1D2B53','#7E2553','#008751',
+    '#AB5236','#5F574F','#C2C3C7','#FFF1E8',
+    '#FF004D','#FFA300','#FFEC27','#00E436',
+    '#29ADFF','#83769C','#FF77A8','#FFCCAA'
+];
+
+const BASE_SIZE = 640;
+
+let pixels = [];
+let history = [];
+let historyIndex = -1;
+let isDrawing = false;
+let startCell = null;
+let previewCells = null;
+let rightClickMode = false;
+let lastColorCount = 0;
+
+// DOM
+const canvas = document.getElementById('pixelCanvas');
+const ctx = canvas.getContext('2d');
+const previewCanvas = document.getElementById('previewCanvas');
+const previewCtx = previewCanvas.getContext('2d');
+const previewBox = document.getElementById('previewBox');
+const canvasContainer = document.getElementById('canvasContainer');
+const colorPicker = document.getElementById('colorPicker');
+const hexInput = document.getElementById('hexInput');
+const colorDisplay = document.getElementById('colorDisplay');
+const secondaryColorDisplay = document.getElementById('secondaryColorDisplay');
+const headerColorIndicator = document.getElementById('headerColorIndicator');
+const recentColorsEl = document.getElementById('recentColors');
+const paletteEl = document.getElementById('palette');
+const toastContainer = document.getElementById('toastContainer');
+const colorsCounter = document.getElementById('colorsCounter');
+
+let cellSize = BASE_SIZE / state.gridSize;
+
+/* ==========================================================
+   CONTADOR DE COLORES ÚNICOS
+   ========================================================== */
+function countUniqueColors() {
+    const set = new Set();
+    for (let y = 0; y < state.gridSize; y++) {
+        for (let x = 0; x < state.gridSize; x++) {
+            if (pixels[y][x]) set.add(pixels[y][x].toLowerCase());
+        }
+    }
+    return set.size;
+}
+
+function updateColorsCounter(animate = true) {
+    const count = countUniqueColors();
+    if (count === lastColorCount) return;
+    lastColorCount = count;
+    colorsCounter.textContent = count;
+    // Color según cantidad
+    if (count === 0) {
+        colorsCounter.style.background = '#444';
+        colorsCounter.style.color = '#aaa';
+    } else if (count <= 8) {
+        colorsCounter.style.background = '#000';
+        colorsCounter.style.color = '#00e436';
+    } else if (count <= 16) {
+        colorsCounter.style.background = '#000';
+        colorsCounter.style.color = '#ffd700';
+    } else if (count <= 32) {
+        colorsCounter.style.background = '#000';
+        colorsCounter.style.color = '#ffa300';
+    } else {
+        colorsCounter.style.background = '#000';
+        colorsCounter.style.color = '#ff004d';
+    }
+    if (animate) {
+        colorsCounter.classList.remove('bump');
+        void colorsCounter.offsetWidth;
+        colorsCounter.classList.add('bump');
+        setTimeout(() => colorsCounter.classList.remove('bump'), 200);
+    }
+}
+
+/* ==========================================================
+   INICIALIZACIÓN
+   ========================================================== */
+function initPixels() {
+    pixels = Array.from({length: state.gridSize}, () => Array(state.gridSize).fill(null));
+}
+
+function deepClone(arr) {
+    return arr.map(row => row.slice());
+}
+
+function pushHistory() {
+    history = history.slice(0, historyIndex + 1);
+    history.push(deepClone(pixels));
+    if (history.length > 60) history.shift();
+    historyIndex = history.length - 1;
+    updateUndoRedo();
+    saveAuto();
+}
+
+function updateUndoRedo() {
+    document.getElementById('undoBtn').style.opacity = historyIndex > 0 ? '1' : '0.5';
+    document.getElementById('redoBtn').style.opacity = historyIndex < history.length - 1 ? '1' : '0.5';
+}
+
+/* ==========================================================
+   RENDER
+   ========================================================== */
+function render() {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, BASE_SIZE, BASE_SIZE);
+
+    for (let y = 0; y < state.gridSize; y++) {
+        for (let x = 0; x < state.gridSize; x++) {
+            const c = pixels[y][x];
+            if (c) {
+                ctx.fillStyle = c;
+                ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+
+    if (previewCells && previewCells.length) {
+        ctx.fillStyle = state.currentColor;
+        ctx.globalAlpha = 0.65;
+        previewCells.forEach(([px, py]) => {
+            ctx.fillRect(px * cellSize, py * cellSize, cellSize, cellSize);
+        });
+        ctx.globalAlpha = 1;
+    }
+
+    if (state.showGrid && state.gridSize <= 64) {
+        ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= state.gridSize; i++) {
+            const p = Math.round(i * cellSize) + 0.5;
+            ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, BASE_SIZE); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(BASE_SIZE, p); ctx.stroke();
+        }
+    }
+
+    // ACTUALIZAR CONTADOR DE COLORES
+    updateColorsCounter();
+
+    if (state.showPreview) updatePreview();
+}
+
+function updatePreview() {
+    const pSize = Math.max(32, Math.min(96, 4 * state.gridSize));
+    previewCanvas.width = state.gridSize;
+    previewCanvas.height = state.gridSize;
+    previewCanvas.style.width = pSize + 'px';
+    previewCanvas.style.height = pSize + 'px';
+    previewCtx.clearRect(0, 0, state.gridSize, state.gridSize);
+    for (let y = 0; y < state.gridSize; y++) {
+        for (let x = 0; x < state.gridSize; x++) {
+            if (pixels[y][x]) {
+                previewCtx.fillStyle = pixels[y][x];
+                previewCtx.fillRect(x, y, 1, 1);
+            }
+        }
+    }
+}
+
+/* ==========================================================
+   COORDENADAS
+   ========================================================== */
+function getCellFromEvent(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    if (e.touches && e.touches[0]) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+    const scaleX = BASE_SIZE / rect.width;
+    const scaleY = BASE_SIZE / rect.height;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    const cx = Math.floor(x / cellSize);
+    const cy = Math.floor(y / cellSize);
+    if (cx < 0 || cx >= state.gridSize || cy < 0 || cy >= state.gridSize) return null;
+    return {x: cx, y: cy};
+}
+
+function setPixel(x, y, color, target = pixels) {
+    if (x < 0 || x >= state.gridSize || y < 0 || y >= state.gridSize) return;
+    target[y][x] = color;
+    if (state.mirrorX) {
+        const mx = state.gridSize - 1 - x;
+        target[y][mx] = color;
+    }
+    if (state.mirrorY) {
+        const my = state.gridSize - 1 - y;
+        target[my][x] = color;
+        if (state.mirrorX) {
+            target[my][state.gridSize - 1 - x] = color;
+        }
+    }
+}
+
+/* ==========================================================
+   FORMAS
+   ========================================================== */
+function getLineCells(x0, y0, x1, y1) {
+    const cells = [];
+    let dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+    let sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
+    while (true) {
+        cells.push([x0, y0]);
+        if (x0 === x1 && y0 === y1) break;
+        const e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 < dx) { err += dx; y0 += sy; }
+    }
+    return cells;
+}
+
+function getRectCells(x0, y0, x1, y1, filled) {
+    const cells = [];
+    const minX = Math.min(x0, x1), maxX = Math.max(x0, x1);
+    const minY = Math.min(y0, y1), maxY = Math.max(y0, y1);
+    for (let y = minY; y <= maxY; y++) {
+        for (let x = minX; x <= maxX; x++) {
+            if (filled || x === minX || x === maxX || y === minY || y === maxY) {
+                cells.push([x, y]);
+            }
+        }
+    }
+    return cells;
+}
+
+function getCircleCells(cx0, cy0, cx1, cy1, filled) {
+    const cells = [];
+    const dx = cx1 - cx0, dy = cy1 - cy0;
+    const r = Math.round(Math.sqrt(dx*dx + dy*dy));
+    let x = r, y = 0, err = 1 - r;
+    const set8 = (x, y) => {
+        const pts = [
+            [cx0 + x, cy0 + y], [cx0 - x, cy0 + y], [cx0 + x, cy0 - y], [cx0 - x, cy0 - y],
+            [cx0 + y, cy0 + x], [cx0 - y, cy0 + x], [cx0 + y, cy0 - x], [cx0 - y, cy0 - x]
+        ];
+        pts.forEach(p => cells.push(p));
+    };
+    while (x >= y) {
+        set8(x, y);
+        y++;
+        if (err < 0) err += 2 * y + 1;
+        else { x--; err += 2 * (y - x) + 1; }
+    }
+    if (filled) {
+        const set = new Set();
+        const filledCells = [];
+        cells.forEach(([x, y]) => {
+            const k = x + ',' + y;
+            if (!set.has(k)) { set.add(k); filledCells.push([x, y]); }
+        });
+        for (let y = cy0 - r; y <= cy0 + r; y++) {
+            for (let x = cx0 - r; x <= cx0 + r; x++) {
+                const dx = x - cx0, dy = y - cy0;
+                if (dx*dx + dy*dy <= r*r) {
+                    const k = x + ',' + y;
+                    if (!set.has(k)) { set.add(k); filledCells.push([x, y]); }
+                }
+            }
+        }
+        return filledCells;
+    }
+    return cells;
+}
+
+function floodFill(startX, startY, newColor) {
+    const targetColor = pixels[startY][startX];
+    if (targetColor === newColor) return false;
+    const stack = [[startX, startY]];
+    const visited = new Set();
+    let changed = false;
+    while (stack.length) {
+        const [x, y] = stack.pop();
+        if (x < 0 || x >= state.gridSize || y < 0 || y >= state.gridSize) continue;
+        const k = x + ',' + y;
+        if (visited.has(k)) continue;
+        visited.add(k);
+        if (pixels[y][x] !== targetColor) continue;
+        pixels[y][x] = newColor;
+        changed = true;
+        if (state.mirrorX) {
+            const mx = state.gridSize - 1 - x;
+            if (pixels[y][mx] === targetColor) pixels[y][mx] = newColor;
+        }
+        if (state.mirrorY) {
+            const my = state.gridSize - 1 - y;
+            if (pixels[my][x] === targetColor) pixels[my][x] = newColor;
+            if (state.mirrorX) {
+                if (pixels[my][state.gridSize - 1 - x] === targetColor)
+                    pixels[my][state.gridSize - 1 - x] = newColor;
+            }
+        }
+        stack.push([x+1, y], [x-1, y], [x, y+1], [x, y-1]);
+    }
+    return changed;
+}
+
+/* ==========================================================
+   DIBUJO
+   ========================================================== */
+function getEffectiveColor() {
+    return rightClickMode ? state.secondaryColor : state.currentColor;
+}
+
+function startDraw(e) {
+    e.preventDefault();
+    const cell = getCellFromEvent(e);
+    if (!cell) return;
+    isDrawing = true;
+    startCell = cell;
+    rightClickMode = (e.button === 2) || (e.buttons === 2);
+
+    if (state.tool === 'pencil' || state.tool === 'eraser') {
+        pushHistory();
+        const color = state.tool === 'eraser' ? null : getEffectiveColor();
+        setPixel(cell.x, cell.y, color);
+        render();
+    } else if (state.tool === 'fill') {
+        pushHistory();
+        floodFill(cell.x, cell.y, getEffectiveColor());
+        render();
+    } else if (state.tool === 'eyedropper') {
+        const c = pixels[cell.y][cell.x];
+        if (c) {
+            setCurrentColor(c);
+            toast('Color tomado: ' + c);
+        }
+    } else {
+        previewCells = [[cell.x, cell.y]];
+        render();
+    }
+}
+
+function moveDraw(e) {
+    const cell = getCellFromEvent(e);
+    const coordLabel = document.getElementById('coordLabel');
+    if (cell) coordLabel.textContent = `x: ${cell.x}, y: ${cell.y}`;
+    else coordLabel.textContent = 'x: -, y: -';
+
+    if (!isDrawing || !startCell) return;
+    if (state.tool === 'pencil' || state.tool === 'eraser') {
+        if (!cell) return;
+        const color = state.tool === 'eraser' ? null : getEffectiveColor();
+        setPixel(cell.x, cell.y, color);
+        render();
+    } else if (state.tool === 'line') {
+        previewCells = getLineCells(startCell.x, startCell.y, cell.x, cell.y);
+        render();
+    } else if (state.tool === 'rect') {
+        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, false);
+        render();
+    } else if (state.tool === 'frect') {
+        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, true);
+        render();
+    } else if (state.tool === 'circle') {
+        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, false);
+        render();
+    } else if (state.tool === 'fcircle') {
+        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, true);
+        render();
+    }
+}
+
+function endDraw(e) {
+    if (!isDrawing) return;
+    isDrawing = false;
+
+    if (previewCells && previewCells.length && ['line','rect','frect','circle','fcircle'].includes(state.tool)) {
+        pushHistory();
+        const color = getEffectiveColor();
+        previewCells.forEach(([x, y]) => setPixel(x, y, color));
+        previewCells = null;
+        render();
+    }
+
+    startCell = null;
+    rightClickMode = false;
+}
+
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', moveDraw);
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', endDraw);
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('touchstart', startDraw, {passive: false});
+canvas.addEventListener('touchmove', moveDraw, {passive: false});
+canvas.addEventListener('touchend', endDraw);
+
+/* ==========================================================
+   COLOR
+   ========================================================== */
+function setCurrentColor(color) {
+    state.currentColor = color;
+    colorDisplay.style.backgroundColor = color;
+    headerColorIndicator.style.backgroundColor = color;
+    hexInput.value = color.toUpperCase();
+    colorPicker.value = color;
+    addRecentColor(color);
+}
+
+function setSecondaryColor(color) {
+    state.secondaryColor = color;
+    secondaryColorDisplay.style.backgroundColor = color;
+}
+
+function addRecentColor(color) {
+    if (!color) return;
+    state.recentColors = [color, ...state.recentColors.filter(c => c !== color)].slice(0, 12);
+    renderRecentColors();
+}
+
+function renderRecentColors() {
+    recentColorsEl.innerHTML = '';
+    state.recentColors.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'color-swatch';
+        sw.style.backgroundColor = c;
+        sw.title = c;
+        sw.onclick = () => setCurrentColor(c);
+        recentColorsEl.appendChild(sw);
+    });
+}
+
+function renderPalette() {
+    paletteEl.innerHTML = '';
+    PICO8_PALETTE.forEach(c => {
+        const sw = document.createElement('div');
+        sw.className = 'color-swatch';
+        sw.style.backgroundColor = c;
+        sw.title = c;
+        sw.onclick = () => setCurrentColor(c);
+        paletteEl.appendChild(sw);
+    });
+}
+
+colorDisplay.addEventListener('click', () => colorPicker.click());
+headerColorIndicator.addEventListener('click', () => colorPicker.click());
+secondaryColorDisplay.addEventListener('click', () => colorPicker.click());
+
+colorPicker.addEventListener('input', e => setCurrentColor(e.target.value));
+
+hexInput.addEventListener('change', e => {
+    let v = e.target.value.trim();
+    if (!v.startsWith('#')) v = '#' + v;
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) setCurrentColor(v);
+    else { toast('HEX inválido'); hexInput.value = state.currentColor; }
+});
+
+document.getElementById('swapColorsBtn').addEventListener('click', () => {
+    const tmp = state.currentColor;
+    setCurrentColor(state.secondaryColor);
+    setSecondaryColor(tmp);
+    toast('Colores intercambiados');
+});
+
+document.getElementById('randomColorBtn').addEventListener('click', () => {
+    const c = '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
+    setCurrentColor(c);
+});
+
+document.getElementById('copyHexBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(state.currentColor).then(() => toast('HEX copiado: ' + state.currentColor));
+});
+
+/* ==========================================================
+   HERRAMIENTAS
+   ========================================================== */
+const toolNames = {
+    pencil: 'Lápiz', eraser: 'Borrador', fill: 'Relleno',
+    eyedropper: 'Cuentagotas', line: 'Línea', rect: 'Rectángulo',
+    frect: 'Rect. relleno', circle: 'Círculo', fcircle: 'Círculo relleno'
+};
+
+document.querySelectorAll('.tool-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.tool = btn.dataset.tool;
+        document.getElementById('toolLabel').textContent = 'Herramienta: ' + toolNames[state.tool];
+        playBeep(400, 0.03);
+    });
+});
+
+/* ==========================================================
+   HISTORIAL
+   ========================================================== */
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+
+function undo() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        pixels = deepClone(history[historyIndex]);
+        render();
+        updateUndoRedo();
+        saveAuto();
+    }
+}
+
+function redo() {
+    if (historyIndex < history.length - 1) {
+        historyIndex++;
+        pixels = deepClone(history[historyIndex]);
+        render();
+        updateUndoRedo();
+        saveAuto();
+    }
+}
+
+/* ==========================================================
+   SIMETRÍA
+   ========================================================== */
+document.getElementById('mirrorXBtn').addEventListener('click', e => {
+    state.mirrorX = !state.mirrorX;
+    e.target.classList.toggle('active', state.mirrorX);
+    toast('Simetría X: ' + (state.mirrorX ? 'ON' : 'OFF'));
+});
+document.getElementById('mirrorYBtn').addEventListener('click', e => {
+    state.mirrorY = !state.mirrorY;
+    e.target.classList.toggle('active', state.mirrorY);
+    toast('Simetría Y: ' + (state.mirrorY ? 'ON' : 'OFF'));
+});
+
+/* ==========================================================
+   TRANSFORMACIONES
+   ========================================================== */
+function transformPixels(fn) {
+    pushHistory();
+    pixels = fn(pixels);
+    render();
+}
+
+document.getElementById('flipHBtn').addEventListener('click', () => {
+    transformPixels(p => p.map(row => row.slice().reverse()));
+    toast('Volteado horizontal');
+});
+document.getElementById('flipVBtn').addEventListener('click', () => {
+    transformPixels(p => p.slice().reverse().map(row => row.slice()));
+    toast('Volteado vertical');
+});
+document.getElementById('rotateBtn').addEventListener('click', () => {
+    const n = state.gridSize;
+    transformPixels(p => {
+        const np = Array.from({length: n}, () => Array(n).fill(null));
+        for (let y = 0; y < n; y++)
+            for (let x = 0; x < n; x++)
+                np[x][n - 1 - y] = p[y][x];
+        return np;
+    });
+    toast('Rotado 90°');
+});
+document.getElementById('invertBtn').addEventListener('click', () => {
+    transformPixels(p => p.map(row => row.map(c => c ? invertColor(c) : state.currentColor)));
+    toast('Colores invertidos');
+});
+function invertColor(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = 255 - (n >> 16);
+    const g = 255 - ((n >> 8) & 0xff);
+    const b = 255 - (n & 0xff);
+    return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6, '0');
+}
+
+function shiftPixels(dx, dy) {
+    const n = state.gridSize;
+    transformPixels(p => {
+        const np = Array.from({length: n}, () => Array(n).fill(null));
+        for (let y = 0; y < n; y++) {
+            for (let x = 0; x < n; x++) {
+                const nx = x + dx, ny = y + dy;
+                if (nx >= 0 && nx < n && ny >= 0 && ny < n) np[ny][nx] = p[y][x];
+            }
+        }
+        return np;
+    });
+}
+document.getElementById('shiftLeft').addEventListener('click', () => shiftPixels(-1, 0));
+document.getElementById('shiftRight').addEventListener('click', () => shiftPixels(1, 0));
+document.getElementById('shiftUp').addEventListener('click', () => shiftPixels(0, -1));
+document.getElementById('shiftDown').addEventListener('click', () => shiftPixels(0, 1));
+
+/* ==========================================================
+   RESOLUCIÓN
+   ========================================================== */
+document.querySelectorAll('.grid-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const size = parseInt(btn.dataset.size);
+        changeGridSize(size);
+    });
+});
+
+document.getElementById('applyCustomSize').addEventListener('click', () => {
+    const v = parseInt(document.getElementById('customSizeInput').value);
+    if (v >= 2 && v <= 128) changeGridSize(v);
+    else toast('Tamaño debe ser entre 2 y 128');
+});
+
+function changeGridSize(size) {
+    if (size === state.gridSize) return;
+    if (!confirm(`Cambiar a ${size}×${size}. Se borrará el dibujo actual. ¿Continuar?`)) return;
+    state.gridSize = size;
+    cellSize = BASE_SIZE / size;
+    initPixels();
+    history = [];
+    historyIndex = -1;
+    lastColorCount = -1;
+    pushHistory();
+    render();
+    updateGridButtons();
+    document.getElementById('sizeLabel').textContent = `Lienzo: ${size}×${size}`;
+    saveAuto();
+    toast(`Lienzo: ${size}×${size}`);
+}
+
+function updateGridButtons() {
+    document.querySelectorAll('.grid-btn').forEach(b => {
+        b.classList.toggle('active', parseInt(b.dataset.size) === state.gridSize);
+    });
+}
+
+/* ==========================================================
+   LIMPIAR
+   ========================================================== */
+document.getElementById('clearBtn').addEventListener('click', () => {
+    if (!confirm('¿Borrar todo el dibujo?')) return;
+    pushHistory();
+    initPixels();
+    render();
+    toast('Lienzo borrado');
+});
+
+/* ==========================================================
+   GUARDAR
+   ========================================================== */
+function downloadCanvas(filename, transparent) {
+    const tmp = document.createElement('canvas');
+    tmp.width = BASE_SIZE;
+    tmp.height = BASE_SIZE;
+    const tctx = tmp.getContext('2d');
+    if (!transparent) {
+        tctx.fillStyle = '#ffffff';
+        tctx.fillRect(0, 0, BASE_SIZE, BASE_SIZE);
+    }
+    for (let y = 0; y < state.gridSize; y++) {
+        for (let x = 0; x < state.gridSize; x++) {
+            if (pixels[y][x]) {
+                tctx.fillStyle = pixels[y][x];
+                tctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = tmp.toDataURL('image/png');
+    link.click();
+}
+
+document.getElementById('saveBtn').addEventListener('click', () => {
+    downloadCanvas(`pixel_art_${Date.now()}.png`, false);
+    toast('Imagen guardada');
+});
+document.getElementById('saveTransparentBtn').addEventListener('click', () => {
+    downloadCanvas(`pixel_art_${Date.now()}_transparent.png`, true);
+    toast('Imagen transparente guardada');
+});
+document.getElementById('saveJsonBtn').addEventListener('click', () => {
+    const data = { gridSize: state.gridSize, pixels: pixels, version: 1 };
+    const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+    const link = document.createElement('a');
+    link.download = `pixel_project_${Date.now()}.json`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    toast('Proyecto guardado');
+});
+
+/* ==========================================================
+   CARGAR
+   ========================================================== */
+const fileInput = document.getElementById('fileInput');
+const jsonInput = document.getElementById('jsonInput');
+
+document.getElementById('loadBtn').addEventListener('click', () => fileInput.click());
+document.getElementById('loadJsonBtn').addEventListener('click', () => jsonInput.click());
+
+fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+            const tmp = document.createElement('canvas');
+            tmp.width = state.gridSize;
+            tmp.height = state.gridSize;
+            const tctx = tmp.getContext('2d');
+            tctx.drawImage(img, 0, 0, state.gridSize, state.gridSize);
+            const imgData = tctx.getImageData(0, 0, state.gridSize, state.gridSize).data;
+            pushHistory();
+            for (let y = 0; y < state.gridSize; y++) {
+                for (let x = 0; x < state.gridSize; x++) {
+                    const i = (y * state.gridSize + x) * 4;
+                    const a = imgData[i+3];
+                    if (a < 10) {
+                        pixels[y][x] = null;
+                    } else {
+                        const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
+                        pixels[y][x] = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+                    }
+                }
+            }
+            render();
+            toast('Imagen cargada');
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    fileInput.value = '';
+});
+
+jsonInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (!data.pixels || !data.gridSize) throw new Error('Formato inválido');
+            state.gridSize = data.gridSize;
+            cellSize = BASE_SIZE / state.gridSize;
+            pixels = data.pixels;
+            history = [];
+            historyIndex = -1;
+            lastColorCount = -1;
+            pushHistory();
+            render();
+            updateGridButtons();
+            document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
+            toast('Proyecto cargado');
+        } catch (err) {
+            toast('Error al cargar el proyecto');
+        }
+    };
+    reader.readAsText(file);
+    jsonInput.value = '';
+});
+
+/* ==========================================================
+   COMPARTIR Y COPIAR
+   ========================================================== */
+document.getElementById('shareBtn').addEventListener('click', () => {
+    const data = JSON.stringify({g: state.gridSize, p: pixels});
+    const encoded = btoa(unescape(encodeURIComponent(data)));
+    const baseUrl = window.location.href.split('?')[0].split('#')[0];
+    const url = `${baseUrl}?pixel=${encoded}`;
+    navigator.clipboard.writeText(url).then(() => {
+        toast('URL copiada al portapapeles');
+    }).catch(() => {
+        prompt('Copia manualmente:', url);
+    });
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+    const tmp = document.createElement('canvas');
+    tmp.width = BASE_SIZE;
+    tmp.height = BASE_SIZE;
+    const tctx = tmp.getContext('2d');
+    tctx.fillStyle = '#ffffff';
+    tctx.fillRect(0, 0, BASE_SIZE, BASE_SIZE);
+    for (let y = 0; y < state.gridSize; y++) {
+        for (let x = 0; x < state.gridSize; x++) {
+            if (pixels[y][x]) {
+                tctx.fillStyle = pixels[y][x];
+                tctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+            }
+        }
+    }
+    tmp.toBlob(blob => {
+        try {
+            const item = new ClipboardItem({'image/png': blob});
+            navigator.clipboard.write([item]).then(() => toast('Imagen copiada'));
+        } catch (e) {
+            toast('Tu navegador no lo permite');
+        }
+    });
+});
+
+/* ==========================================================
+   ZOOM
+   ========================================================== */
+function applyZoom() {
+    canvasContainer.style.transform = `scale(${state.zoom})`;
+    document.getElementById('zoomLabel').textContent = Math.round(state.zoom * 100) + '%';
+}
+document.getElementById('zoomIn').addEventListener('click', () => {
+    state.zoom = Math.min(3, state.zoom + 0.25); applyZoom();
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+    state.zoom = Math.max(0.4, state.zoom - 0.25); applyZoom();
+});
+document.getElementById('zoomReset').addEventListener('click', () => {
+    state.zoom = 1; applyZoom();
+});
+
+/* ==========================================================
+   VISTA
+   ========================================================== */
+document.getElementById('toggleGridBtn').addEventListener('click', e => {
+    state.showGrid = !state.showGrid;
+    e.target.classList.toggle('active', state.showGrid);
+    render();
+});
+document.getElementById('togglePreviewBtn').addEventListener('click', e => {
+    state.showPreview = !state.showPreview;
+    e.target.classList.toggle('active', state.showPreview);
+    previewBox.style.display = state.showPreview ? 'block' : 'none';
+    if (state.showPreview) updatePreview();
+});
+
+/* ==========================================================
+   PANTALLA COMPLETA
+   ========================================================== */
+document.getElementById('fullscreenBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => toast('No disponible'));
+    } else {
+        document.exitFullscreen();
+    }
+});
+
+/* ==========================================================
+   SONIDO
+   ========================================================== */
+let audioCtx = null;
+function playBeep(freq = 500, dur = 0.05) {
+    if (!state.soundOn) return;
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = freq;
+        osc.type = 'square';
+        gain.gain.value = 0.04;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+    } catch (e) {}
+}
+
+document.getElementById('soundBtn').addEventListener('click', e => {
+    state.soundOn = !state.soundOn;
+    e.target.textContent = state.soundOn ? '🔊' : '🔇';
+    toast('Sonidos: ' + (state.soundOn ? 'ON' : 'OFF'));
+});
+
+/* ==========================================================
+   MODAL DE AYUDA
+   ========================================================== */
+document.getElementById('helpBtn').addEventListener('click', () => {
+    document.getElementById('helpModal').classList.add('show');
+});
+document.getElementById('closeHelp').addEventListener('click', () => {
+    document.getElementById('helpModal').classList.remove('show');
+});
+document.getElementById('helpModal').addEventListener('click', e => {
+    if (e.target.id === 'helpModal') e.target.classList.remove('show');
+});
+
+/* ==========================================================
+   TOAST
+   ========================================================== */
+function toast(msg) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    toastContainer.appendChild(el);
+    setTimeout(() => el.remove(), 2600);
+}
+
+/* ==========================================================
+   ATAJOS
+   ========================================================== */
+document.addEventListener('keydown', e => {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault(); undo(); return;
+    }
+    if ((e.ctrlKey && e.key.toLowerCase() === 'y') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault(); redo(); return;
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        document.getElementById('saveBtn').click(); return;
+    }
+    if (e.target.tagName === 'INPUT') return;
+
+    const k = e.key.toLowerCase();
+    const toolMap = {
+        b: 'pencil', e: 'eraser', g: 'fill', i: 'eyedropper',
+        l: 'line', r: 'rect', f: 'frect', c: 'circle', v: 'fcircle'
+    };
+    if (toolMap[k] && !e.shiftKey) {
+        const btn = document.querySelector(`.tool-btn[data-tool="${toolMap[k]}"]`);
+        if (btn) btn.click();
+        return;
+    }
+    if (k === 'x') document.getElementById('swapColorsBtn').click();
+    if (k === '0') document.getElementById('zoomReset').click();
+    if (k === '+' || k === '=') document.getElementById('zoomIn').click();
+    if (k === '-') document.getElementById('zoomOut').click();
+    if (k === 'g' && e.shiftKey) document.getElementById('toggleGridBtn').click();
+    const sizeKeys = {'1': 8, '2': 16, '3': 24, '4': 32, '5': 48, '6': 64};
+    if (sizeKeys[k]) {
+        const btn = document.querySelector(`.grid-btn[data-size="${sizeKeys[k]}"]`);
+        if (btn) btn.click();
+    }
+    if (k === 'delete') document.getElementById('clearBtn').click();
+});
+
+/* ==========================================================
+   AUTOGUARDADO
+   ========================================================== */
+function saveAuto() {
+    try {
+        const data = {gridSize: state.gridSize, pixels: pixels};
+        localStorage.setItem('pixelstudio_autosave', JSON.stringify(data));
+    } catch (e) {}
+}
+
+function loadAuto() {
+    try {
+        const raw = localStorage.getItem('pixelstudio_autosave');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data.pixels || !data.gridSize) return false;
+        if (!confirm('¿Restaurar tu último dibujo guardado automáticamente?')) return false;
+        state.gridSize = data.gridSize;
+        cellSize = BASE_SIZE / state.gridSize;
+        pixels = data.pixels;
+        history = [];
+        historyIndex = -1;
+        lastColorCount = -1;
+        pushHistory();
+        render();
+        updateGridButtons();
+        document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
+        toast('Autoguardado restaurado');
+        return true;
+    } catch (e) { return false; }
+}
+
+document.getElementById('clearLocalBtn').addEventListener('click', () => {
+    if (confirm('¿Borrar el autoguardado?')) {
+        localStorage.removeItem('pixelstudio_autosave');
+        toast('Autoguardado borrado');
+    }
+});
+
+document.getElementById('clearRecentBtn').addEventListener('click', () => {
+    state.recentColors = [];
+    renderRecentColors();
+    toast('Colores recientes borrados');
+});
+
+/* ==========================================================
+   URL
+   ========================================================== */
+function loadFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const data = params.get('pixel');
+    if (!data) return false;
+    try {
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(data))));
+        if (!decoded.p || !decoded.g) return false;
+        state.gridSize = decoded.g;
+        cellSize = BASE_SIZE / state.gridSize;
+        pixels = decoded.p;
+        history = [];
+        historyIndex = -1;
+        lastColorCount = -1;
+        pushHistory();
+        render();
+        updateGridButtons();
+        document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
+        toast('Dibujo cargado desde URL');
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
+}
+
+document.addEventListener('contextmenu', e => {
+    if (e.target === canvas) e.preventDefault();
+});
+
+/* ==========================================================
+   ARRANQUE
+   ========================================================== */
+window.addEventListener('load', () => {
+    const loadedUrl = loadFromUrl();
+    if (!loadedUrl) {
+        const loaded = loadAuto();
+        if (!loaded) {
+            initPixels();
+            pushHistory();
+            render();
+        }
+    }
+    renderPalette();
+    setCurrentColor(state.currentColor);
+    setSecondaryColor(state.secondaryColor);
+    updateGridButtons();
+    updateUndoRedo();
+    updateColorsCounter(false);
+    document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
+    applyZoom();
+});
+
+window.addEventListener('beforeunload', saveAuto);
+
+</script>
+</body>
+</html>
