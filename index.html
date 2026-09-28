@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIXEL STUDIO - Editor de Pixel Art</title>
+<title>PIXEL STUDIO</title>
 <style>
 :root {
     --bg-green: #1ba34a;
@@ -22,8 +22,6 @@ html, body {
     user-select: none;
     color: #000;
 }
-
-/* HEADER */
 header {
     display: flex;
     justify-content: space-between;
@@ -52,8 +50,8 @@ header {
     font-weight: bold;
     letter-spacing: 2px;
 }
-.header-right { text-align: center; }
-.header-right h2 {
+.header-center { flex: 1; text-align: center; }
+.header-center h2 {
     margin: 0;
     font-size: 16px;
     color: #ffd700;
@@ -63,7 +61,6 @@ header {
     justify-content: center;
     gap: 8px;
 }
-/* CONTADOR DE COLORES */
 .colors-counter {
     background: #000;
     color: #ffd700;
@@ -86,10 +83,7 @@ header {
     background: #ffd700;
     color: #000;
 }
-.colors-counter::before {
-    content: '🎨';
-    font-size: 11px;
-}
+.colors-counter::before { content: '🎨'; font-size: 11px; }
 .color-title {
     font-size: 18px;
     font-weight: bold;
@@ -108,9 +102,31 @@ header {
     transition: transform 0.15s;
 }
 .color-box-indicator:hover { transform: scale(1.1); }
-.header-right h3 { margin: 0; font-size: 15px; color: #000; }
+.header-center h3 { margin: 0; font-size: 15px; color: #000; }
 
-/* MAIN LAYOUT */
+/* LANG SELECTOR */
+.lang-selector {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+.lang-btn {
+    background: rgba(255,255,255,0.25);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 2px 6px;
+    transition: all 0.15s;
+    line-height: 1;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.5); }
+.lang-btn.active {
+    background: #fff;
+    border-color: #000;
+    box-shadow: 0 0 0 2px #ffd700;
+}
+
 main {
     display: flex;
     flex: 1;
@@ -119,8 +135,6 @@ main {
     overflow: hidden;
     min-height: 0;
 }
-
-/* PANELS */
 .panel {
     background: rgba(255,255,255,0.18);
     border-radius: 6px;
@@ -136,8 +150,6 @@ main {
     text-transform: uppercase;
     opacity: 0.95;
 }
-
-/* LEFT SIDEBAR */
 .left-tools {
     width: 230px;
     overflow-y: auto;
@@ -213,7 +225,6 @@ main {
 .btn-block.share { color: #4169e1; }
 .btn-block.clear { color: #dc143c; }
 
-/* CENTER */
 .center-col {
     flex: 1;
     display: flex;
@@ -291,7 +302,6 @@ canvas {
     font-weight: bold;
 }
 
-/* RIGHT SIDEBAR */
 .right-tools {
     width: 200px;
     overflow-y: auto;
@@ -340,11 +350,6 @@ canvas {
     font-weight: bold;
     cursor: pointer;
     font-size: 11px;
-}
-.color-actions {
-    display: flex;
-    gap: 3px;
-    margin-bottom: 5px;
 }
 .hex-input {
     width: 100%;
@@ -406,7 +411,6 @@ canvas {
     padding: 0;
 }
 
-/* STATUS BAR */
 .status-bar {
     background: rgba(0,0,0,0.25);
     padding: 4px 15px;
@@ -421,7 +425,6 @@ canvas {
 .status-bar span { margin-right: 15px; }
 .status-bar .hint { opacity: 0.7; font-family: Arial; }
 
-/* TOAST */
 .toast-container {
     position: fixed;
     bottom: 40px;
@@ -454,7 +457,6 @@ canvas {
     to { opacity: 0; transform: translateY(20px); }
 }
 
-/* MODAL */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -500,7 +502,6 @@ canvas {
     font-size: 14px;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.3); border-radius: 4px; }
@@ -516,82 +517,86 @@ canvas {
         </div>
         <div class="subtitle">STUDIO</div>
     </div>
-    <div class="header-right">
+    <div class="header-center">
         <h2>
-            MIS COLORES
-            <span class="colors-counter" id="colorsCounter" title="Colores únicos en el dibujo">0</span>
+            <span data-i18n="h_colors">MIS COLORES</span>
+            <span class="colors-counter" id="colorsCounter" title="Colores únicos">0</span>
         </h2>
         <div class="color-title">
-            COLOR <div class="color-box-indicator" id="headerColorIndicator" title="Elegir color"></div>
+            <span data-i18n="h_color">COLOR</span> <div class="color-box-indicator" id="headerColorIndicator" title="Elegir color"></div>
         </div>
-        <h3>Crea tu Sprite aqui</h3>
+        <h3 data-i18n="h_create">Crea tu Sprite aqui</h3>
+    </div>
+    <div class="lang-selector">
+        <button class="lang-btn" data-lang="es" title="Español">🇪🇸</button>
+        <button class="lang-btn" data-lang="en" title="English">🇬🇧</button>
+        <button class="lang-btn" data-lang="pt" title="Português">🇧🇷</button>
     </div>
 </header>
 
 <main>
-    <!-- ============ LEFT SIDEBAR ============ -->
     <aside class="left-tools">
         <div class="panel">
-            <div class="panel-title">Herramientas</div>
+            <div class="panel-title" data-i18n="p_tools">Herramientas</div>
             <div class="tool-grid">
-                <button class="tool-btn active" data-tool="pencil" title="Lápiz (B)">✏️</button>
-                <button class="tool-btn" data-tool="eraser" title="Borrador (E)">🧽</button>
-                <button class="tool-btn" data-tool="fill" title="Relleno (G)">🪣</button>
-                <button class="tool-btn" data-tool="eyedropper" title="Cuentagotas (I)">💧</button>
-                <button class="tool-btn" data-tool="line" title="Línea (L)">╱</button>
-                <button class="tool-btn" data-tool="rect" title="Rectángulo (R)">▭</button>
-                <button class="tool-btn" data-tool="frect" title="Rectángulo relleno (F)">▬</button>
-                <button class="tool-btn" data-tool="circle" title="Círculo (C)">○</button>
-                <button class="tool-btn" data-tool="fcircle" title="Círculo relleno (V)">●</button>
+                <button class="tool-btn active" data-tool="pencil" data-i18n-title="tt_pencil">✏️</button>
+                <button class="tool-btn" data-tool="eraser" data-i18n-title="tt_eraser">🧽</button>
+                <button class="tool-btn" data-tool="fill" data-i18n-title="tt_fill">🪣</button>
+                <button class="tool-btn" data-tool="eyedropper" data-i18n-title="tt_eyedropper">💧</button>
+                <button class="tool-btn" data-tool="line" data-i18n-title="tt_line">╱</button>
+                <button class="tool-btn" data-tool="rect" data-i18n-title="tt_rect">▭</button>
+                <button class="tool-btn" data-tool="frect" data-i18n-title="tt_frect">▬</button>
+                <button class="tool-btn" data-tool="circle" data-i18n-title="tt_circle">○</button>
+                <button class="tool-btn" data-tool="fcircle" data-i18n-title="tt_fcircle">●</button>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Historial y Simetría</div>
+            <div class="panel-title" data-i18n="p_history">Historial y Simetría</div>
             <div class="btn-row">
-                <button class="btn-sm" id="undoBtn" title="Deshacer (Ctrl+Z)">↶ Deshacer</button>
-                <button class="btn-sm" id="redoBtn" title="Rehacer (Ctrl+Y)">↷ Rehacer</button>
+                <button class="btn-sm" id="undoBtn" data-i18n="btn_undo">↶ Deshacer</button>
+                <button class="btn-sm" id="redoBtn" data-i18n="btn_redo">↷ Rehacer</button>
             </div>
             <div class="btn-row" style="margin-top:3px;">
-                <button class="btn-sm" id="mirrorXBtn" title="Simetría horizontal">↔ Sim.X</button>
-                <button class="btn-sm" id="mirrorYBtn" title="Simetría vertical">↕ Sim.Y</button>
+                <button class="btn-sm" id="mirrorXBtn" data-i18n="btn_mirror_x">↔ Sim.X</button>
+                <button class="btn-sm" id="mirrorYBtn" data-i18n="btn_mirror_y">↕ Sim.Y</button>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Transformar</div>
+            <div class="panel-title" data-i18n="p_transform">Transformar</div>
             <div class="btn-row">
-                <button class="btn-sm" id="flipHBtn" title="Voltear horizontal">⇄</button>
-                <button class="btn-sm" id="flipVBtn" title="Voltear vertical">⇅</button>
-                <button class="btn-sm" id="rotateBtn" title="Rotar 90°">↻</button>
-                <button class="btn-sm" id="invertBtn" title="Invertir colores">🎨</button>
+                <button class="btn-sm" id="flipHBtn" data-i18n-title="tt_flip_h">⇄</button>
+                <button class="btn-sm" id="flipVBtn" data-i18n-title="tt_flip_v">⇅</button>
+                <button class="btn-sm" id="rotateBtn" data-i18n-title="tt_rotate">↻</button>
+                <button class="btn-sm" id="invertBtn" data-i18n-title="tt_invert">🎨</button>
             </div>
             <div class="btn-row" style="margin-top:3px;">
-                <button class="btn-sm" id="shiftLeft" title="Mover izquierda">←</button>
-                <button class="btn-sm" id="shiftUp" title="Mover arriba">↑</button>
-                <button class="btn-sm" id="shiftDown" title="Mover abajo">↓</button>
-                <button class="btn-sm" id="shiftRight" title="Mover derecha">→</button>
+                <button class="btn-sm" id="shiftLeft" data-i18n-title="tt_shift_l">←</button>
+                <button class="btn-sm" id="shiftUp" data-i18n-title="tt_shift_u">↑</button>
+                <button class="btn-sm" id="shiftDown" data-i18n-title="tt_shift_d">↓</button>
+                <button class="btn-sm" id="shiftRight" data-i18n-title="tt_shift_r">→</button>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Archivo</div>
-            <button class="btn-block save" id="saveBtn">GUARDAR PNG 💾</button>
-            <button class="btn-block save" id="saveTransparentBtn">PNG SIN FONDO 🔲</button>
-            <button class="btn-block save" id="saveJsonBtn">PROYECTO (.json) 📄</button>
-            <button class="btn-block load" id="loadBtn">CARGAR IMAGEN ⬆️</button>
-            <button class="btn-block load" id="loadJsonBtn">CARGAR PROYECTO 📂</button>
-            <button class="btn-block share" id="shareBtn">COMPARTIR URL 🔗</button>
-            <button class="btn-block share" id="copyBtn">COPIAR IMAGEN 📋</button>
-            <button class="btn-block clear" id="clearBtn">BORRAR TODO 🗑️</button>
+            <div class="panel-title" data-i18n="p_file">Archivo</div>
+            <button class="btn-block save" id="saveBtn" data-i18n="btn_save">GUARDAR PNG 💾</button>
+            <button class="btn-block save" id="saveTransparentBtn" data-i18n="btn_save_trans">PNG SIN FONDO 🔲</button>
+            <button class="btn-block save" id="saveJsonBtn" data-i18n="btn_save_json">PROYECTO (.json) 📄</button>
+            <button class="btn-block load" id="loadBtn" data-i18n="btn_load_img">CARGAR IMAGEN ⬆️</button>
+            <button class="btn-block load" id="loadJsonBtn" data-i18n="btn_load_json">CARGAR PROYECTO 📂</button>
+            <button class="btn-block share" id="shareBtn" data-i18n="btn_share">COMPARTIR URL 🔗</button>
+            <button class="btn-block share" id="copyBtn" data-i18n="btn_copy">COPIAR IMAGEN 📋</button>
+            <button class="btn-block clear" id="clearBtn" data-i18n="btn_clear">BORRAR TODO 🗑️</button>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Extras</div>
+            <div class="panel-title" data-i18n="p_extras">Extras</div>
             <div class="btn-row">
-                <button class="btn-sm" id="helpBtn" title="Ayuda">❓ Ayuda</button>
+                <button class="btn-sm" id="helpBtn" data-i18n="btn_help">❓ Ayuda</button>
                 <button class="btn-sm" id="soundBtn" title="Sonidos">🔊</button>
-                <button class="btn-sm" id="fullscreenBtn" title="Pantalla completa">⛶</button>
+                <button class="btn-sm" id="fullscreenBtn" data-i18n-title="tt_fullscreen">⛶</button>
             </div>
         </div>
 
@@ -599,31 +604,29 @@ canvas {
         <input type="file" id="jsonInput" accept=".json,application/json" style="display:none">
     </aside>
 
-    <!-- ============ CENTER ============ -->
     <div class="center-col">
         <div class="canvas-wrapper">
             <div class="canvas-container" id="canvasContainer">
                 <canvas id="pixelCanvas" width="640" height="640"></canvas>
                 <div class="preview-box" style="display:none;" id="previewBox">
-                    <div class="preview-label">VISTA 1:1</div>
+                    <div class="preview-label" data-i18n="preview_1to1">VISTA 1:1</div>
                     <canvas id="previewCanvas" width="64" height="64"></canvas>
                 </div>
             </div>
         </div>
         <div class="zoom-controls">
             <button id="zoomOut" title="Zoom -">−</button>
-            <span>Zoom: <span id="zoomLabel">100%</span></span>
+            <span><span data-i18n="zoom_label">Zoom:</span> <span id="zoomLabel">100%</span></span>
             <button id="zoomIn" title="Zoom +">+</button>
-            <button id="zoomReset" title="Restablecer zoom">⟲</button>
-            <button id="toggleGridBtn" class="active" title="Mostrar/ocultar cuadrícula">▦ Cuadrícula</button>
-            <button id="togglePreviewBtn" title="Vista previa 1:1">👁 Preview</button>
+            <button id="zoomReset" title="Reset">⟲</button>
+            <button id="toggleGridBtn" class="active" data-i18n="btn_grid">▦ Cuadrícula</button>
+            <button id="togglePreviewBtn" data-i18n="btn_preview">👁 Preview</button>
         </div>
     </div>
 
-    <!-- ============ RIGHT SIDEBAR ============ -->
     <aside class="right-tools">
         <div class="panel">
-            <div class="panel-title">Resolución</div>
+            <div class="panel-title" data-i18n="p_resolution">Resolución</div>
             <div class="grid-sizes">
                 <button class="grid-btn" data-size="8">8</button>
                 <button class="grid-btn" data-size="16">16</button>
@@ -633,38 +636,38 @@ canvas {
                 <button class="grid-btn" data-size="64">64</button>
             </div>
             <div class="custom-size">
-                <input type="number" id="customSizeInput" placeholder="Ej: 20" min="2" max="128">
+                <input type="number" id="customSizeInput" placeholder="Ej: 20" min="2" max="128" data-i18n-placeholder="ph_custom_size">
                 <button id="applyCustomSize">OK</button>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Color</div>
+            <div class="panel-title" data-i18n="p_color">Color</div>
             <div class="color-current-pair">
-                <div class="color-preview-big" id="colorDisplay" title="Color actual"></div>
-                <button class="swap-btn" id="swapColorsBtn" title="Intercambiar colores (X)">⇄</button>
-                <div class="color-preview-small" id="secondaryColorDisplay" title="Color secundario (click derecho = borrar)"></div>
+                <div class="color-preview-big" id="colorDisplay"></div>
+                <button class="swap-btn" id="swapColorsBtn" data-i18n-title="tt_swap">⇄</button>
+                <div class="color-preview-small" id="secondaryColorDisplay"></div>
             </div>
             <input type="color" id="colorPicker" value="#ffd700" style="display:none">
-            <input type="text" class="hex-input" id="hexInput" value="#FFD700" maxlength="7" title="Código HEX">
+            <input type="text" class="hex-input" id="hexInput" value="#FFD700" maxlength="7">
             <div class="btn-row" style="margin-top:4px;">
-                <button class="btn-sm" id="randomColorBtn" title="Color aleatorio">🎲</button>
-                <button class="btn-sm" id="copyHexBtn" title="Copiar HEX">📋</button>
+                <button class="btn-sm" id="randomColorBtn" data-i18n-title="tt_random">🎲</button>
+                <button class="btn-sm" id="copyHexBtn" data-i18n-title="tt_copy_hex">📋</button>
             </div>
-            <div class="panel-title" style="margin-top:6px;">Recientes</div>
+            <div class="panel-title" style="margin-top:6px;" data-i18n="p_recent">Recientes</div>
             <div class="recent-colors" id="recentColors"></div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Paleta PICO-8</div>
+            <div class="panel-title" data-i18n="p_palette">Paleta PICO-8</div>
             <div class="palette" id="palette"></div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Vista</div>
+            <div class="panel-title" data-i18n="p_view">Vista</div>
             <div class="btn-row">
-                <button class="btn-sm" id="clearRecentBtn" title="Limpiar recientes">🗑 Recientes</button>
-                <button class="btn-sm" id="clearLocalBtn" title="Borrar autoguardado">🗑 Autoguardado</button>
+                <button class="btn-sm" id="clearRecentBtn" data-i18n="btn_recent">🗑 Recientes</button>
+                <button class="btn-sm" id="clearLocalBtn" data-i18n="btn_local">🗑 Autoguardado</button>
             </div>
         </div>
     </aside>
@@ -676,39 +679,279 @@ canvas {
         <span id="toolLabel">Herramienta: Lápiz</span>
         <span id="sizeLabel">Lienzo: 32×32</span>
     </div>
-    <div class="hint">Ctrl+Z: deshacer · B/E/G/I: herramientas · 1-6: tamaño · X: swap</div>
+    <div class="hint" data-i18n="s_hint">Ctrl+Z: deshacer · B/E/G/I: herramientas · 1-6: tamaño · X: swap</div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="modal-overlay" id="helpModal">
     <div class="modal">
-        <h2>🎨 Ayuda de Pixel Studio</h2>
-        <h3>Herramientas</h3>
+        <h2 data-i18n="help_title">🎨 Ayuda de Pixel Studio</h2>
+        <h3 data-i18n="help_tools_h">Herramientas</h3>
         <ul>
-            <li><b>Lápiz (B)</b>: Dibuja píxeles uno a uno</li>
-            <li><b>Borrador (E)</b>: Borra píxeles</li>
-            <li><b>Relleno (G)</b>: Rellena zonas del mismo color</li>
-            <li><b>Cuentagotas (I)</b>: Toma color de un píxel</li>
-            <li><b>Línea (L)</b>, <b>Rectángulo (R/F)</b>, <b>Círculo (C/V)</b></li>
+            <li data-i18n="help_tool_pencil">Lápiz (B): Dibuja píxeles uno a uno</li>
+            <li data-i18n="help_tool_eraser">Borrador (E): Borra píxeles</li>
+            <li data-i18n="help_tool_fill">Relleno (G): Rellena zonas del mismo color</li>
+            <li data-i18n="help_tool_eyedropper">Cuentagotas (I): Toma color de un píxel</li>
+            <li data-i18n="help_tool_shapes">Línea (L), Rectángulo (R/F), Círculo (C/V)</li>
         </ul>
-        <h3>Atajos de teclado</h3>
+        <h3 data-i18n="help_shortcuts_h">Atajos de teclado</h3>
         <ul>
-            <li><kbd>Ctrl</kbd>+<kbd>Z</kbd>: Deshacer · <kbd>Ctrl</kbd>+<kbd>Y</kbd>: Rehacer</li>
-            <li><kbd>B</kbd>/<kbd>E</kbd>/<kbd>G</kbd>/<kbd>I</kbd>/<kbd>L</kbd>/<kbd>R</kbd>/<kbd>C</kbd>: Herramientas</li>
-            <li><kbd>1</kbd>-<kbd>6</kbd>: Cambiar tamaño de lienzo</li>
-            <li><kbd>X</kbd>: Intercambiar colores</li>
-            <li><kbd>+</kbd>/<kbd>-</kbd>: Zoom · <kbd>0</kbd>: Reset</li>
+            <li data-i18n="help_sc_undo">Ctrl+Z: Deshacer · Ctrl+Y: Rehacer</li>
+            <li data-i18n="help_sc_tools">B/E/G/I/L/R/C: Herramientas</li>
+            <li data-i18n="help_sc_size">1-6: Cambiar tamaño de lienzo</li>
+            <li data-i18n="help_sc_x">X: Intercambiar colores</li>
+            <li data-i18n="help_sc_zoom">+/-: Zoom · 0: Reset</li>
         </ul>
-        <button class="modal-close" id="closeHelp">Cerrar</button>
+        <button class="modal-close" id="closeHelp" data-i18n="btn_close">Cerrar</button>
     </div>
 </div>
 
 <script>
 /* ==========================================================
-   PIXEL STUDIO — Editor completo
+   TRADUCCIONES
    ========================================================== */
+const I18N = {
+    es: {
+        h_colors: "MIS COLORES", h_color: "COLOR", h_create: "Crea tu Sprite aqui",
+        p_tools: "Herramientas", p_history: "Historial y Simetría", p_transform: "Transformar",
+        p_file: "Archivo", p_extras: "Extras", p_resolution: "Resolución", p_color: "Color",
+        p_palette: "Paleta PICO-8", p_view: "Vista", p_recent: "Recientes",
+        btn_undo: "↶ Deshacer", btn_redo: "↷ Rehacer",
+        btn_mirror_x: "↔ Sim.X", btn_mirror_y: "↕ Sim.Y",
+        btn_save: "GUARDAR PNG 💾", btn_save_trans: "PNG SIN FONDO 🔲",
+        btn_save_json: "PROYECTO (.json) 📄", btn_load_img: "CARGAR IMAGEN ⬆️",
+        btn_load_json: "CARGAR PROYECTO 📂", btn_share: "COMPARTIR URL 🔗",
+        btn_copy: "COPIAR IMAGEN 📋", btn_clear: "BORRAR TODO 🗑️",
+        btn_help: "❓ Ayuda", btn_recent: "🗑 Recientes", btn_local: "🗑 Autoguardado",
+        btn_grid: "▦ Cuadrícula", btn_preview: "👁 Preview", btn_close: "Cerrar",
+        zoom_label: "Zoom:", preview_1to1: "VISTA 1:1",
+        ph_custom_size: "Ej: 20",
+        s_tool: "Herramienta:", s_size: "Lienzo:",
+        s_hint: "Ctrl+Z: deshacer · B/E/G/I: herramientas · 1-6: tamaño · X: swap",
+        t_pencil: "Lápiz", t_eraser: "Borrador", t_fill: "Relleno",
+        t_eyedropper: "Cuentagotas", t_line: "Línea", t_rect: "Rectángulo",
+        t_frect: "Rect. relleno", t_circle: "Círculo", t_fcircle: "Círculo relleno",
+        tt_pencil: "Lápiz (B)", tt_eraser: "Borrador (E)", tt_fill: "Relleno (G)",
+        tt_eyedropper: "Cuentagotas (I)", tt_line: "Línea (L)", tt_rect: "Rectángulo (R)",
+        tt_frect: "Rect. relleno (F)", tt_circle: "Círculo (C)", tt_fcircle: "Círculo relleno (V)",
+        tt_flip_h: "Voltear horizontal", tt_flip_v: "Voltear vertical",
+        tt_rotate: "Rotar 90°", tt_invert: "Invertir colores",
+        tt_shift_l: "Mover izquierda", tt_shift_u: "Mover arriba",
+        tt_shift_d: "Mover abajo", tt_shift_r: "Mover derecha",
+        tt_swap: "Intercambiar colores (X)", tt_random: "Color aleatorio", tt_copy_hex: "Copiar HEX",
+        tt_fullscreen: "Pantalla completa",
+        help_title: "🎨 Ayuda de Pixel Studio",
+        help_tools_h: "Herramientas", help_shortcuts_h: "Atajos de teclado",
+        help_tool_pencil: "Lápiz (B): Dibuja píxeles uno a uno",
+        help_tool_eraser: "Borrador (E): Borra píxeles",
+        help_tool_fill: "Relleno (G): Rellena zonas del mismo color",
+        help_tool_eyedropper: "Cuentagotas (I): Toma color de un píxel",
+        help_tool_shapes: "Línea (L), Rectángulo (R/F), Círculo (C/V)",
+        help_sc_undo: "Ctrl+Z: Deshacer · Ctrl+Y: Rehacer",
+        help_sc_tools: "B/E/G/I/L/R/C: Herramientas",
+        help_sc_size: "1-6: Cambiar tamaño de lienzo",
+        help_sc_x: "X: Intercambiar colores",
+        help_sc_zoom: "+/-: Zoom · 0: Reset",
+        toast_color_taken: "Color tomado: ",
+        toast_hex_invalid: "HEX inválido",
+        toast_hex_copied: "HEX copiado: ",
+        toast_colors_swap: "Colores intercambiados",
+        toast_mirror_x: "Simetría X: ", toast_mirror_y: "Simetría Y: ",
+        toast_flip_h: "Volteado horizontal", toast_flip_v: "Volteado vertical",
+        toast_rotated: "Rotado 90°", toast_inverted: "Colores invertidos",
+        toast_size_invalid: "Tamaño debe ser entre 2 y 128",
+        toast_size_set: "Lienzo: ", toast_cleared: "Lienzo borrado",
+        toast_saved: "Imagen guardada", toast_saved_trans: "Imagen transparente guardada",
+        toast_saved_proj: "Proyecto guardado", toast_loaded: "Imagen cargada",
+        toast_loaded_proj: "Proyecto cargado", toast_load_error: "Error al cargar el proyecto",
+        toast_url_copied: "URL copiada al portapapeles", toast_img_copied: "Imagen copiada",
+        toast_not_supported: "Tu navegador no lo permite",
+        toast_sound: "Sonidos: ", toast_fs_unavailable: "No disponible",
+        toast_restored: "Autoguardado restaurado", toast_local_cleared: "Autoguardado borrado",
+        toast_recent_cleared: "Colores recientes borrados", toast_url_loaded: "Dibujo cargado desde URL",
+        confirm_resize: "Cambiar a {s}×{s}. Se borrará el dibujo actual. ¿Continuar?",
+        confirm_clear: "¿Borrar todo el dibujo?",
+        confirm_restore: "¿Restaurar tu último dibujo guardado automáticamente?",
+        confirm_clear_local: "¿Borrar el autoguardado?",
+        prompt_copy_url: "Copia esta URL manualmente:"
+    },
+    en: {
+        h_colors: "MY COLORS", h_color: "COLOR", h_create: "Create your Sprite here",
+        p_tools: "Tools", p_history: "History & Symmetry", p_transform: "Transform",
+        p_file: "File", p_extras: "Extras", p_resolution: "Resolution", p_color: "Color",
+        p_palette: "PICO-8 Palette", p_view: "View", p_recent: "Recent",
+        btn_undo: "↶ Undo", btn_redo: "↷ Redo",
+        btn_mirror_x: "↔ Mirror X", btn_mirror_y: "↕ Mirror Y",
+        btn_save: "SAVE PNG 💾", btn_save_trans: "TRANSPARENT PNG 🔲",
+        btn_save_json: "PROJECT (.json) 📄", btn_load_img: "LOAD IMAGE ⬆️",
+        btn_load_json: "LOAD PROJECT 📂", btn_share: "SHARE URL 🔗",
+        btn_copy: "COPY IMAGE 📋", btn_clear: "CLEAR ALL 🗑️",
+        btn_help: "❓ Help", btn_recent: "🗑 Recent", btn_local: "🗑 Autosave",
+        btn_grid: "▦ Grid", btn_preview: "👁 Preview", btn_close: "Close",
+        zoom_label: "Zoom:", preview_1to1: "1:1 VIEW",
+        ph_custom_size: "Ex: 20",
+        s_tool: "Tool:", s_size: "Canvas:",
+        s_hint: "Ctrl+Z: undo · B/E/G/I: tools · 1-6: size · X: swap",
+        t_pencil: "Pencil", t_eraser: "Eraser", t_fill: "Fill",
+        t_eyedropper: "Eyedropper", t_line: "Line", t_rect: "Rectangle",
+        t_frect: "Filled Rect.", t_circle: "Circle", t_fcircle: "Filled Circle",
+        tt_pencil: "Pencil (B)", tt_eraser: "Eraser (E)", tt_fill: "Fill (G)",
+        tt_eyedropper: "Eyedropper (I)", tt_line: "Line (L)", tt_rect: "Rectangle (R)",
+        tt_frect: "Filled Rectangle (F)", tt_circle: "Circle (C)", tt_fcircle: "Filled Circle (V)",
+        tt_flip_h: "Flip horizontal", tt_flip_v: "Flip vertical",
+        tt_rotate: "Rotate 90°", tt_invert: "Invert colors",
+        tt_shift_l: "Move left", tt_shift_u: "Move up",
+        tt_shift_d: "Move down", tt_shift_r: "Move right",
+        tt_swap: "Swap colors (X)", tt_random: "Random color", tt_copy_hex: "Copy HEX",
+        tt_fullscreen: "Fullscreen",
+        help_title: "🎨 Pixel Studio Help",
+        help_tools_h: "Tools", help_shortcuts_h: "Keyboard shortcuts",
+        help_tool_pencil: "Pencil (B): Draw pixels one by one",
+        help_tool_eraser: "Eraser (E): Erase pixels",
+        help_tool_fill: "Fill (G): Fill areas of the same color",
+        help_tool_eyedropper: "Eyedropper (I): Pick a color from a pixel",
+        help_tool_shapes: "Line (L), Rectangle (R/F), Circle (C/V)",
+        help_sc_undo: "Ctrl+Z: Undo · Ctrl+Y: Redo",
+        help_sc_tools: "B/E/G/I/L/R/C: Tools",
+        help_sc_size: "1-6: Change canvas size",
+        help_sc_x: "X: Swap colors",
+        help_sc_zoom: "+/-: Zoom · 0: Reset",
+        toast_color_taken: "Color picked: ",
+        toast_hex_invalid: "Invalid HEX",
+        toast_hex_copied: "HEX copied: ",
+        toast_colors_swap: "Colors swapped",
+        toast_mirror_x: "X Symmetry: ", toast_mirror_y: "Y Symmetry: ",
+        toast_flip_h: "Flipped horizontal", toast_flip_v: "Flipped vertical",
+        toast_rotated: "Rotated 90°", toast_inverted: "Colors inverted",
+        toast_size_invalid: "Size must be between 2 and 128",
+        toast_size_set: "Canvas: ", toast_cleared: "Canvas cleared",
+        toast_saved: "Image saved", toast_saved_trans: "Transparent image saved",
+        toast_saved_proj: "Project saved", toast_loaded: "Image loaded",
+        toast_loaded_proj: "Project loaded", toast_load_error: "Error loading project",
+        toast_url_copied: "URL copied to clipboard", toast_img_copied: "Image copied",
+        toast_not_supported: "Your browser doesn't allow it",
+        toast_sound: "Sounds: ", toast_fs_unavailable: "Not available",
+        toast_restored: "Autosave restored", toast_local_cleared: "Autosave deleted",
+        toast_recent_cleared: "Recent colors cleared", toast_url_loaded: "Drawing loaded from URL",
+        confirm_resize: "Change to {s}×{s}. Current drawing will be erased. Continue?",
+        confirm_clear: "Clear all drawing?",
+        confirm_restore: "Restore your last autosaved drawing?",
+        confirm_clear_local: "Delete autosave?",
+        prompt_copy_url: "Copy this URL manually:"
+    },
+    pt: {
+        h_colors: "MINHAS CORES", h_color: "COR", h_create: "Crie seu Sprite aqui",
+        p_tools: "Ferramentas", p_history: "Histórico e Simetria", p_transform: "Transformar",
+        p_file: "Arquivo", p_extras: "Extras", p_resolution: "Resolução", p_color: "Cor",
+        p_palette: "Paleta PICO-8", p_view: "Visualizar", p_recent: "Recentes",
+        btn_undo: "↶ Desfazer", btn_redo: "↷ Refazer",
+        btn_mirror_x: "↔ Esp.X", btn_mirror_y: "↕ Esp.Y",
+        btn_save: "SALVAR PNG 💾", btn_save_trans: "PNG TRANSPARENTE 🔲",
+        btn_save_json: "PROJETO (.json) 📄", btn_load_img: "CARREGAR IMAGEM ⬆️",
+        btn_load_json: "CARREGAR PROJETO 📂", btn_share: "COMPARTILHAR URL 🔗",
+        btn_copy: "COPIAR IMAGEM 📋", btn_clear: "LIMPAR TUDO 🗑️",
+        btn_help: "❓ Ajuda", btn_recent: "🗑 Recentes", btn_local: "🗑 Autosalvo",
+        btn_grid: "▦ Grade", btn_preview: "👁 Prévia", btn_close: "Fechar",
+        zoom_label: "Zoom:", preview_1to1: "VISTA 1:1",
+        ph_custom_size: "Ex: 20",
+        s_tool: "Ferramenta:", s_size: "Tela:",
+        s_hint: "Ctrl+Z: desfazer · B/E/G/I: ferramentas · 1-6: tamanho · X: trocar",
+        t_pencil: "Lápis", t_eraser: "Borracha", t_fill: "Preencher",
+        t_eyedropper: "Conta-gotas", t_line: "Linha", t_rect: "Retângulo",
+        t_frect: "Ret. preenchido", t_circle: "Círculo", t_fcircle: "Círculo preenchido",
+        tt_pencil: "Lápis (B)", tt_eraser: "Borracha (E)", tt_fill: "Preencher (G)",
+        tt_eyedropper: "Conta-gotas (I)", tt_line: "Linha (L)", tt_rect: "Retângulo (R)",
+        tt_frect: "Retângulo preenchido (F)", tt_circle: "Círculo (C)", tt_fcircle: "Círculo preenchido (V)",
+        tt_flip_h: "Inverter horizontal", tt_flip_v: "Inverter vertical",
+        tt_rotate: "Rotacionar 90°", tt_invert: "Inverter cores",
+        tt_shift_l: "Mover esquerda", tt_shift_u: "Mover acima",
+        tt_shift_d: "Mover abaixo", tt_shift_r: "Mover direita",
+        tt_swap: "Trocar cores (X)", tt_random: "Cor aleatória", tt_copy_hex: "Copiar HEX",
+        tt_fullscreen: "Tela cheia",
+        help_title: "🎨 Ajuda do Pixel Studio",
+        help_tools_h: "Ferramentas", help_shortcuts_h: "Atalhos de teclado",
+        help_tool_pencil: "Lápis (B): Desenha pixels um a um",
+        help_tool_eraser: "Borracha (E): Apaga pixels",
+        help_tool_fill: "Preencher (G): Preenche áreas da mesma cor",
+        help_tool_eyedropper: "Conta-gotas (I): Pega a cor de um pixel",
+        help_tool_shapes: "Linha (L), Retângulo (R/F), Círculo (C/V)",
+        help_sc_undo: "Ctrl+Z: Desfazer · Ctrl+Y: Refazer",
+        help_sc_tools: "B/E/G/I/L/R/C: Ferramentas",
+        help_sc_size: "1-6: Mudar tamanho da tela",
+        help_sc_x: "X: Trocar cores",
+        help_sc_zoom: "+/-: Zoom · 0: Reset",
+        toast_color_taken: "Cor pega: ",
+        toast_hex_invalid: "HEX inválido",
+        toast_hex_copied: "HEX copiado: ",
+        toast_colors_swap: "Cores trocadas",
+        toast_mirror_x: "Simetria X: ", toast_mirror_y: "Simetria Y: ",
+        toast_flip_h: "Invertido horizontal", toast_flip_v: "Invertido vertical",
+        toast_rotated: "Rotacionado 90°", toast_inverted: "Cores invertidas",
+        toast_size_invalid: "Tamanho deve ser entre 2 e 128",
+        toast_size_set: "Tela: ", toast_cleared: "Tela limpa",
+        toast_saved: "Imagem salva", toast_saved_trans: "Imagem transparente salva",
+        toast_saved_proj: "Projeto salvo", toast_loaded: "Imagem carregada",
+        toast_loaded_proj: "Projeto carregado", toast_load_error: "Erro ao carregar projeto",
+        toast_url_copied: "URL copiada para a área de transferência", toast_img_copied: "Imagem copiada",
+        toast_not_supported: "Seu navegador não permite",
+        toast_sound: "Sons: ", toast_fs_unavailable: "Não disponível",
+        toast_restored: "Autosalvo restaurado", toast_local_cleared: "Autosalvo apagado",
+        toast_recent_cleared: "Cores recentes limpas", toast_url_loaded: "Desenho carregado da URL",
+        confirm_resize: "Mudar para {s}×{s}. O desenho atual será apagado. Continuar?",
+        confirm_clear: "Limpar todo o desenho?",
+        confirm_restore: "Restaurar seu último desenho autosalvo?",
+        confirm_clear_local: "Apagar autosalvo?",
+        prompt_copy_url: "Copie esta URL manualmente:"
+    }
+};
 
+let currentLang = 'es';
+
+function t(key, replacements = {}) {
+    let str = (I18N[currentLang] && I18N[currentLang][key]) || (I18N.es[key]) || key;
+    for (const k in replacements) {
+        str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), replacements[k]);
+    }
+    return str;
+}
+
+function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.title = t(el.getAttribute('data-i18n-title'));
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+    });
+    // Status bar dinámicos
+    updateToolLabel();
+    document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + state.gridSize + '×' + state.gridSize;
+    // Idioma del documento
+    document.documentElement.lang = currentLang;
+    // Botones de idioma activos
+    document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.lang === currentLang);
+    });
+}
+
+function setLanguage(lang) {
+    if (!I18N[lang]) return;
+    currentLang = lang;
+    try { localStorage.setItem('pixelstudio_lang', lang); } catch(e) {}
+    applyTranslations();
+}
+
+function updateToolLabel() {
+    document.getElementById('toolLabel').textContent = t('s_tool') + ' ' + t('t_' + state.tool);
+}
+
+/* ==========================================================
+   ESTADO
+   ========================================================== */
 const state = {
     gridSize: 32,
     currentColor: '#ffd700',
@@ -731,7 +974,6 @@ const PICO8_PALETTE = [
 ];
 
 const BASE_SIZE = 640;
-
 let pixels = [];
 let history = [];
 let historyIndex = -1;
@@ -741,7 +983,6 @@ let previewCells = null;
 let rightClickMode = false;
 let lastColorCount = 0;
 
-// DOM
 const canvas = document.getElementById('pixelCanvas');
 const ctx = canvas.getContext('2d');
 const previewCanvas = document.getElementById('previewCanvas');
@@ -761,15 +1002,13 @@ const colorsCounter = document.getElementById('colorsCounter');
 let cellSize = BASE_SIZE / state.gridSize;
 
 /* ==========================================================
-   CONTADOR DE COLORES ÚNICOS
+   CONTADOR DE COLORES
    ========================================================== */
 function countUniqueColors() {
     const set = new Set();
-    for (let y = 0; y < state.gridSize; y++) {
-        for (let x = 0; x < state.gridSize; x++) {
+    for (let y = 0; y < state.gridSize; y++)
+        for (let x = 0; x < state.gridSize; x++)
             if (pixels[y][x]) set.add(pixels[y][x].toLowerCase());
-        }
-    }
     return set.size;
 }
 
@@ -778,7 +1017,6 @@ function updateColorsCounter(animate = true) {
     if (count === lastColorCount) return;
     lastColorCount = count;
     colorsCounter.textContent = count;
-    // Color según cantidad
     if (count === 0) {
         colorsCounter.style.background = '#444';
         colorsCounter.style.color = '#aaa';
@@ -809,11 +1047,7 @@ function updateColorsCounter(animate = true) {
 function initPixels() {
     pixels = Array.from({length: state.gridSize}, () => Array(state.gridSize).fill(null));
 }
-
-function deepClone(arr) {
-    return arr.map(row => row.slice());
-}
-
+function deepClone(arr) { return arr.map(row => row.slice()); }
 function pushHistory() {
     history = history.slice(0, historyIndex + 1);
     history.push(deepClone(pixels));
@@ -822,7 +1056,6 @@ function pushHistory() {
     updateUndoRedo();
     saveAuto();
 }
-
 function updateUndoRedo() {
     document.getElementById('undoBtn').style.opacity = historyIndex > 0 ? '1' : '0.5';
     document.getElementById('redoBtn').style.opacity = historyIndex < history.length - 1 ? '1' : '0.5';
@@ -844,7 +1077,6 @@ function render() {
             }
         }
     }
-
     if (previewCells && previewCells.length) {
         ctx.fillStyle = state.currentColor;
         ctx.globalAlpha = 0.65;
@@ -853,7 +1085,6 @@ function render() {
         });
         ctx.globalAlpha = 1;
     }
-
     if (state.showGrid && state.gridSize <= 64) {
         ctx.strokeStyle = 'rgba(0,0,0,0.12)';
         ctx.lineWidth = 1;
@@ -863,10 +1094,7 @@ function render() {
             ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(BASE_SIZE, p); ctx.stroke();
         }
     }
-
-    // ACTUALIZAR CONTADOR DE COLORES
     updateColorsCounter();
-
     if (state.showPreview) updatePreview();
 }
 
@@ -877,18 +1105,16 @@ function updatePreview() {
     previewCanvas.style.width = pSize + 'px';
     previewCanvas.style.height = pSize + 'px';
     previewCtx.clearRect(0, 0, state.gridSize, state.gridSize);
-    for (let y = 0; y < state.gridSize; y++) {
-        for (let x = 0; x < state.gridSize; x++) {
+    for (let y = 0; y < state.gridSize; y++)
+        for (let x = 0; x < state.gridSize; x++)
             if (pixels[y][x]) {
                 previewCtx.fillStyle = pixels[y][x];
                 previewCtx.fillRect(x, y, 1, 1);
             }
-        }
-    }
 }
 
 /* ==========================================================
-   COORDENADAS
+   COORDENADAS Y PÍXELES
    ========================================================== */
 function getCellFromEvent(e) {
     const rect = canvas.getBoundingClientRect();
@@ -913,16 +1139,11 @@ function getCellFromEvent(e) {
 function setPixel(x, y, color, target = pixels) {
     if (x < 0 || x >= state.gridSize || y < 0 || y >= state.gridSize) return;
     target[y][x] = color;
-    if (state.mirrorX) {
-        const mx = state.gridSize - 1 - x;
-        target[y][mx] = color;
-    }
+    if (state.mirrorX) target[y][state.gridSize - 1 - x] = color;
     if (state.mirrorY) {
         const my = state.gridSize - 1 - y;
         target[my][x] = color;
-        if (state.mirrorX) {
-            target[my][state.gridSize - 1 - x] = color;
-        }
+        if (state.mirrorX) target[my][state.gridSize - 1 - x] = color;
     }
 }
 
@@ -943,32 +1164,24 @@ function getLineCells(x0, y0, x1, y1) {
     }
     return cells;
 }
-
 function getRectCells(x0, y0, x1, y1, filled) {
     const cells = [];
     const minX = Math.min(x0, x1), maxX = Math.max(x0, x1);
     const minY = Math.min(y0, y1), maxY = Math.max(y0, y1);
-    for (let y = minY; y <= maxY; y++) {
-        for (let x = minX; x <= maxX; x++) {
-            if (filled || x === minX || x === maxX || y === minY || y === maxY) {
+    for (let y = minY; y <= maxY; y++)
+        for (let x = minX; x <= maxX; x++)
+            if (filled || x === minX || x === maxX || y === minY || y === maxY)
                 cells.push([x, y]);
-            }
-        }
-    }
     return cells;
 }
-
 function getCircleCells(cx0, cy0, cx1, cy1, filled) {
     const cells = [];
     const dx = cx1 - cx0, dy = cy1 - cy0;
     const r = Math.round(Math.sqrt(dx*dx + dy*dy));
     let x = r, y = 0, err = 1 - r;
     const set8 = (x, y) => {
-        const pts = [
-            [cx0 + x, cy0 + y], [cx0 - x, cy0 + y], [cx0 + x, cy0 - y], [cx0 - x, cy0 - y],
-            [cx0 + y, cy0 + x], [cx0 - y, cy0 + x], [cx0 + y, cy0 - x], [cx0 - y, cy0 - x]
-        ];
-        pts.forEach(p => cells.push(p));
+        [[cx0+x,cy0+y],[cx0-x,cy0+y],[cx0+x,cy0-y],[cx0-x,cy0-y],
+         [cx0+y,cy0+x],[cx0-y,cy0+x],[cx0+y,cy0-x],[cx0-y,cy0-x]].forEach(p => cells.push(p));
     };
     while (x >= y) {
         set8(x, y);
@@ -977,13 +1190,12 @@ function getCircleCells(cx0, cy0, cx1, cy1, filled) {
         else { x--; err += 2 * (y - x) + 1; }
     }
     if (filled) {
-        const set = new Set();
-        const filledCells = [];
+        const set = new Set(), filledCells = [];
         cells.forEach(([x, y]) => {
             const k = x + ',' + y;
             if (!set.has(k)) { set.add(k); filledCells.push([x, y]); }
         });
-        for (let y = cy0 - r; y <= cy0 + r; y++) {
+        for (let y = cy0 - r; y <= cy0 + r; y++)
             for (let x = cx0 - r; x <= cx0 + r; x++) {
                 const dx = x - cx0, dy = y - cy0;
                 if (dx*dx + dy*dy <= r*r) {
@@ -991,12 +1203,10 @@ function getCircleCells(cx0, cy0, cx1, cy1, filled) {
                     if (!set.has(k)) { set.add(k); filledCells.push([x, y]); }
                 }
             }
-        }
         return filledCells;
     }
     return cells;
 }
-
 function floodFill(startX, startY, newColor) {
     const targetColor = pixels[startY][startX];
     if (targetColor === newColor) return false;
@@ -1019,10 +1229,8 @@ function floodFill(startX, startY, newColor) {
         if (state.mirrorY) {
             const my = state.gridSize - 1 - y;
             if (pixels[my][x] === targetColor) pixels[my][x] = newColor;
-            if (state.mirrorX) {
-                if (pixels[my][state.gridSize - 1 - x] === targetColor)
-                    pixels[my][state.gridSize - 1 - x] = newColor;
-            }
+            if (state.mirrorX && pixels[my][state.gridSize - 1 - x] === targetColor)
+                pixels[my][state.gridSize - 1 - x] = newColor;
         }
         stack.push([x+1, y], [x-1, y], [x, y+1], [x, y-1]);
     }
@@ -1035,7 +1243,6 @@ function floodFill(startX, startY, newColor) {
 function getEffectiveColor() {
     return rightClickMode ? state.secondaryColor : state.currentColor;
 }
-
 function startDraw(e) {
     e.preventDefault();
     const cell = getCellFromEvent(e);
@@ -1055,22 +1262,17 @@ function startDraw(e) {
         render();
     } else if (state.tool === 'eyedropper') {
         const c = pixels[cell.y][cell.x];
-        if (c) {
-            setCurrentColor(c);
-            toast('Color tomado: ' + c);
-        }
+        if (c) { setCurrentColor(c); toast(t('toast_color_taken') + c); }
     } else {
         previewCells = [[cell.x, cell.y]];
         render();
     }
 }
-
 function moveDraw(e) {
     const cell = getCellFromEvent(e);
     const coordLabel = document.getElementById('coordLabel');
     if (cell) coordLabel.textContent = `x: ${cell.x}, y: ${cell.y}`;
     else coordLabel.textContent = 'x: -, y: -';
-
     if (!isDrawing || !startCell) return;
     if (state.tool === 'pencil' || state.tool === 'eraser') {
         if (!cell) return;
@@ -1078,27 +1280,20 @@ function moveDraw(e) {
         setPixel(cell.x, cell.y, color);
         render();
     } else if (state.tool === 'line') {
-        previewCells = getLineCells(startCell.x, startCell.y, cell.x, cell.y);
-        render();
+        previewCells = getLineCells(startCell.x, startCell.y, cell.x, cell.y); render();
     } else if (state.tool === 'rect') {
-        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, false);
-        render();
+        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, false); render();
     } else if (state.tool === 'frect') {
-        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, true);
-        render();
+        previewCells = getRectCells(startCell.x, startCell.y, cell.x, cell.y, true); render();
     } else if (state.tool === 'circle') {
-        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, false);
-        render();
+        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, false); render();
     } else if (state.tool === 'fcircle') {
-        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, true);
-        render();
+        previewCells = getCircleCells(startCell.x, startCell.y, cell.x, cell.y, true); render();
     }
 }
-
 function endDraw(e) {
     if (!isDrawing) return;
     isDrawing = false;
-
     if (previewCells && previewCells.length && ['line','rect','frect','circle','fcircle'].includes(state.tool)) {
         pushHistory();
         const color = getEffectiveColor();
@@ -1106,11 +1301,9 @@ function endDraw(e) {
         previewCells = null;
         render();
     }
-
     startCell = null;
     rightClickMode = false;
 }
-
 canvas.addEventListener('mousedown', startDraw);
 canvas.addEventListener('mousemove', moveDraw);
 canvas.addEventListener('mouseup', endDraw);
@@ -1131,18 +1324,15 @@ function setCurrentColor(color) {
     colorPicker.value = color;
     addRecentColor(color);
 }
-
 function setSecondaryColor(color) {
     state.secondaryColor = color;
     secondaryColorDisplay.style.backgroundColor = color;
 }
-
 function addRecentColor(color) {
     if (!color) return;
     state.recentColors = [color, ...state.recentColors.filter(c => c !== color)].slice(0, 12);
     renderRecentColors();
 }
-
 function renderRecentColors() {
     recentColorsEl.innerHTML = '';
     state.recentColors.forEach(c => {
@@ -1154,7 +1344,6 @@ function renderRecentColors() {
         recentColorsEl.appendChild(sw);
     });
 }
-
 function renderPalette() {
     paletteEl.innerHTML = '';
     PICO8_PALETTE.forEach(c => {
@@ -1166,51 +1355,38 @@ function renderPalette() {
         paletteEl.appendChild(sw);
     });
 }
-
 colorDisplay.addEventListener('click', () => colorPicker.click());
 headerColorIndicator.addEventListener('click', () => colorPicker.click());
 secondaryColorDisplay.addEventListener('click', () => colorPicker.click());
-
 colorPicker.addEventListener('input', e => setCurrentColor(e.target.value));
-
 hexInput.addEventListener('change', e => {
     let v = e.target.value.trim();
     if (!v.startsWith('#')) v = '#' + v;
     if (/^#[0-9A-Fa-f]{6}$/.test(v)) setCurrentColor(v);
-    else { toast('HEX inválido'); hexInput.value = state.currentColor; }
+    else { toast(t('toast_hex_invalid')); hexInput.value = state.currentColor; }
 });
-
 document.getElementById('swapColorsBtn').addEventListener('click', () => {
     const tmp = state.currentColor;
     setCurrentColor(state.secondaryColor);
     setSecondaryColor(tmp);
-    toast('Colores intercambiados');
+    toast(t('toast_colors_swap'));
 });
-
 document.getElementById('randomColorBtn').addEventListener('click', () => {
-    const c = '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
-    setCurrentColor(c);
+    setCurrentColor('#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0'));
 });
-
 document.getElementById('copyHexBtn').addEventListener('click', () => {
-    navigator.clipboard.writeText(state.currentColor).then(() => toast('HEX copiado: ' + state.currentColor));
+    navigator.clipboard.writeText(state.currentColor).then(() => toast(t('toast_hex_copied') + state.currentColor));
 });
 
 /* ==========================================================
    HERRAMIENTAS
    ========================================================== */
-const toolNames = {
-    pencil: 'Lápiz', eraser: 'Borrador', fill: 'Relleno',
-    eyedropper: 'Cuentagotas', line: 'Línea', rect: 'Rectángulo',
-    frect: 'Rect. relleno', circle: 'Círculo', fcircle: 'Círculo relleno'
-};
-
 document.querySelectorAll('.tool-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.tool = btn.dataset.tool;
-        document.getElementById('toolLabel').textContent = 'Herramienta: ' + toolNames[state.tool];
+        updateToolLabel();
         playBeep(400, 0.03);
     });
 });
@@ -1220,24 +1396,18 @@ document.querySelectorAll('.tool-btn').forEach(btn => {
    ========================================================== */
 document.getElementById('undoBtn').addEventListener('click', undo);
 document.getElementById('redoBtn').addEventListener('click', redo);
-
 function undo() {
     if (historyIndex > 0) {
         historyIndex--;
         pixels = deepClone(history[historyIndex]);
-        render();
-        updateUndoRedo();
-        saveAuto();
+        render(); updateUndoRedo(); saveAuto();
     }
 }
-
 function redo() {
     if (historyIndex < history.length - 1) {
         historyIndex++;
         pixels = deepClone(history[historyIndex]);
-        render();
-        updateUndoRedo();
-        saveAuto();
+        render(); updateUndoRedo(); saveAuto();
     }
 }
 
@@ -1247,12 +1417,12 @@ function redo() {
 document.getElementById('mirrorXBtn').addEventListener('click', e => {
     state.mirrorX = !state.mirrorX;
     e.target.classList.toggle('active', state.mirrorX);
-    toast('Simetría X: ' + (state.mirrorX ? 'ON' : 'OFF'));
+    toast(t('toast_mirror_x') + (state.mirrorX ? 'ON' : 'OFF'));
 });
 document.getElementById('mirrorYBtn').addEventListener('click', e => {
     state.mirrorY = !state.mirrorY;
     e.target.classList.toggle('active', state.mirrorY);
-    toast('Simetría Y: ' + (state.mirrorY ? 'ON' : 'OFF'));
+    toast(t('toast_mirror_y') + (state.mirrorY ? 'ON' : 'OFF'));
 });
 
 /* ==========================================================
@@ -1263,14 +1433,11 @@ function transformPixels(fn) {
     pixels = fn(pixels);
     render();
 }
-
 document.getElementById('flipHBtn').addEventListener('click', () => {
-    transformPixels(p => p.map(row => row.slice().reverse()));
-    toast('Volteado horizontal');
+    transformPixels(p => p.map(row => row.slice().reverse())); toast(t('toast_flip_h'));
 });
 document.getElementById('flipVBtn').addEventListener('click', () => {
-    transformPixels(p => p.slice().reverse().map(row => row.slice()));
-    toast('Volteado vertical');
+    transformPixels(p => p.slice().reverse().map(row => row.slice())); toast(t('toast_flip_v'));
 });
 document.getElementById('rotateBtn').addEventListener('click', () => {
     const n = state.gridSize;
@@ -1281,30 +1448,26 @@ document.getElementById('rotateBtn').addEventListener('click', () => {
                 np[x][n - 1 - y] = p[y][x];
         return np;
     });
-    toast('Rotado 90°');
+    toast(t('toast_rotated'));
 });
 document.getElementById('invertBtn').addEventListener('click', () => {
     transformPixels(p => p.map(row => row.map(c => c ? invertColor(c) : state.currentColor)));
-    toast('Colores invertidos');
+    toast(t('toast_inverted'));
 });
 function invertColor(hex) {
     const n = parseInt(hex.slice(1), 16);
-    const r = 255 - (n >> 16);
-    const g = 255 - ((n >> 8) & 0xff);
-    const b = 255 - (n & 0xff);
+    const r = 255 - (n >> 16), g = 255 - ((n >> 8) & 0xff), b = 255 - (n & 0xff);
     return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6, '0');
 }
-
 function shiftPixels(dx, dy) {
     const n = state.gridSize;
     transformPixels(p => {
         const np = Array.from({length: n}, () => Array(n).fill(null));
-        for (let y = 0; y < n; y++) {
+        for (let y = 0; y < n; y++)
             for (let x = 0; x < n; x++) {
                 const nx = x + dx, ny = y + dy;
                 if (nx >= 0 && nx < n && ny >= 0 && ny < n) np[ny][nx] = p[y][x];
             }
-        }
         return np;
     });
 }
@@ -1317,35 +1480,27 @@ document.getElementById('shiftDown').addEventListener('click', () => shiftPixels
    RESOLUCIÓN
    ========================================================== */
 document.querySelectorAll('.grid-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const size = parseInt(btn.dataset.size);
-        changeGridSize(size);
-    });
+    btn.addEventListener('click', () => changeGridSize(parseInt(btn.dataset.size)));
 });
-
 document.getElementById('applyCustomSize').addEventListener('click', () => {
     const v = parseInt(document.getElementById('customSizeInput').value);
     if (v >= 2 && v <= 128) changeGridSize(v);
-    else toast('Tamaño debe ser entre 2 y 128');
+    else toast(t('toast_size_invalid'));
 });
-
 function changeGridSize(size) {
     if (size === state.gridSize) return;
-    if (!confirm(`Cambiar a ${size}×${size}. Se borrará el dibujo actual. ¿Continuar?`)) return;
+    if (!confirm(t('confirm_resize', {s: size}))) return;
     state.gridSize = size;
     cellSize = BASE_SIZE / size;
     initPixels();
-    history = [];
-    historyIndex = -1;
-    lastColorCount = -1;
+    history = []; historyIndex = -1; lastColorCount = -1;
     pushHistory();
     render();
     updateGridButtons();
-    document.getElementById('sizeLabel').textContent = `Lienzo: ${size}×${size}`;
+    document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + size + '×' + size;
     saveAuto();
-    toast(`Lienzo: ${size}×${size}`);
+    toast(t('toast_size_set') + size + '×' + size);
 }
-
 function updateGridButtons() {
     document.querySelectorAll('.grid-btn').forEach(b => {
         b.classList.toggle('active', parseInt(b.dataset.size) === state.gridSize);
@@ -1356,11 +1511,11 @@ function updateGridButtons() {
    LIMPIAR
    ========================================================== */
 document.getElementById('clearBtn').addEventListener('click', () => {
-    if (!confirm('¿Borrar todo el dibujo?')) return;
+    if (!confirm(t('confirm_clear'))) return;
     pushHistory();
     initPixels();
     render();
-    toast('Lienzo borrado');
+    toast(t('toast_cleared'));
 });
 
 /* ==========================================================
@@ -1368,34 +1523,28 @@ document.getElementById('clearBtn').addEventListener('click', () => {
    ========================================================== */
 function downloadCanvas(filename, transparent) {
     const tmp = document.createElement('canvas');
-    tmp.width = BASE_SIZE;
-    tmp.height = BASE_SIZE;
+    tmp.width = BASE_SIZE; tmp.height = BASE_SIZE;
     const tctx = tmp.getContext('2d');
     if (!transparent) {
         tctx.fillStyle = '#ffffff';
         tctx.fillRect(0, 0, BASE_SIZE, BASE_SIZE);
     }
-    for (let y = 0; y < state.gridSize; y++) {
-        for (let x = 0; x < state.gridSize; x++) {
+    for (let y = 0; y < state.gridSize; y++)
+        for (let x = 0; x < state.gridSize; x++)
             if (pixels[y][x]) {
                 tctx.fillStyle = pixels[y][x];
                 tctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
             }
-        }
-    }
     const link = document.createElement('a');
     link.download = filename;
     link.href = tmp.toDataURL('image/png');
     link.click();
 }
-
 document.getElementById('saveBtn').addEventListener('click', () => {
-    downloadCanvas(`pixel_art_${Date.now()}.png`, false);
-    toast('Imagen guardada');
+    downloadCanvas(`pixel_art_${Date.now()}.png`, false); toast(t('toast_saved'));
 });
 document.getElementById('saveTransparentBtn').addEventListener('click', () => {
-    downloadCanvas(`pixel_art_${Date.now()}_transparent.png`, true);
-    toast('Imagen transparente guardada');
+    downloadCanvas(`pixel_art_${Date.now()}_transparent.png`, true); toast(t('toast_saved_trans'));
 });
 document.getElementById('saveJsonBtn').addEventListener('click', () => {
     const data = { gridSize: state.gridSize, pixels: pixels, version: 1 };
@@ -1404,7 +1553,7 @@ document.getElementById('saveJsonBtn').addEventListener('click', () => {
     link.download = `pixel_project_${Date.now()}.json`;
     link.href = URL.createObjectURL(blob);
     link.click();
-    toast('Proyecto guardado');
+    toast(t('toast_saved_proj'));
 });
 
 /* ==========================================================
@@ -1412,7 +1561,6 @@ document.getElementById('saveJsonBtn').addEventListener('click', () => {
    ========================================================== */
 const fileInput = document.getElementById('fileInput');
 const jsonInput = document.getElementById('jsonInput');
-
 document.getElementById('loadBtn').addEventListener('click', () => fileInput.click());
 document.getElementById('loadJsonBtn').addEventListener('click', () => jsonInput.click());
 
@@ -1424,26 +1572,22 @@ fileInput.addEventListener('change', e => {
         const img = new Image();
         img.onload = () => {
             const tmp = document.createElement('canvas');
-            tmp.width = state.gridSize;
-            tmp.height = state.gridSize;
+            tmp.width = state.gridSize; tmp.height = state.gridSize;
             const tctx = tmp.getContext('2d');
             tctx.drawImage(img, 0, 0, state.gridSize, state.gridSize);
             const imgData = tctx.getImageData(0, 0, state.gridSize, state.gridSize).data;
             pushHistory();
-            for (let y = 0; y < state.gridSize; y++) {
+            for (let y = 0; y < state.gridSize; y++)
                 for (let x = 0; x < state.gridSize; x++) {
                     const i = (y * state.gridSize + x) * 4;
-                    const a = imgData[i+3];
-                    if (a < 10) {
-                        pixels[y][x] = null;
-                    } else {
+                    if (imgData[i+3] < 10) pixels[y][x] = null;
+                    else {
                         const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
                         pixels[y][x] = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
                     }
                 }
-            }
             render();
-            toast('Imagen cargada');
+            toast(t('toast_loaded'));
         };
         img.src = ev.target.result;
     };
@@ -1458,21 +1602,17 @@ jsonInput.addEventListener('change', e => {
     reader.onload = ev => {
         try {
             const data = JSON.parse(ev.target.result);
-            if (!data.pixels || !data.gridSize) throw new Error('Formato inválido');
+            if (!data.pixels || !data.gridSize) throw new Error();
             state.gridSize = data.gridSize;
             cellSize = BASE_SIZE / state.gridSize;
             pixels = data.pixels;
-            history = [];
-            historyIndex = -1;
-            lastColorCount = -1;
+            history = []; historyIndex = -1; lastColorCount = -1;
             pushHistory();
             render();
             updateGridButtons();
-            document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
-            toast('Proyecto cargado');
-        } catch (err) {
-            toast('Error al cargar el proyecto');
-        }
+            document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + state.gridSize + '×' + state.gridSize;
+            toast(t('toast_loaded_proj'));
+        } catch (err) { toast(t('toast_load_error')); }
     };
     reader.readAsText(file);
     jsonInput.value = '';
@@ -1487,34 +1627,27 @@ document.getElementById('shareBtn').addEventListener('click', () => {
     const baseUrl = window.location.href.split('?')[0].split('#')[0];
     const url = `${baseUrl}?pixel=${encoded}`;
     navigator.clipboard.writeText(url).then(() => {
-        toast('URL copiada al portapapeles');
-    }).catch(() => {
-        prompt('Copia manualmente:', url);
-    });
+        toast(t('toast_url_copied'));
+    }).catch(() => { prompt(t('prompt_copy_url'), url); });
 });
 
 document.getElementById('copyBtn').addEventListener('click', () => {
     const tmp = document.createElement('canvas');
-    tmp.width = BASE_SIZE;
-    tmp.height = BASE_SIZE;
+    tmp.width = BASE_SIZE; tmp.height = BASE_SIZE;
     const tctx = tmp.getContext('2d');
     tctx.fillStyle = '#ffffff';
     tctx.fillRect(0, 0, BASE_SIZE, BASE_SIZE);
-    for (let y = 0; y < state.gridSize; y++) {
-        for (let x = 0; x < state.gridSize; x++) {
+    for (let y = 0; y < state.gridSize; y++)
+        for (let x = 0; x < state.gridSize; x++)
             if (pixels[y][x]) {
                 tctx.fillStyle = pixels[y][x];
                 tctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
             }
-        }
-    }
     tmp.toBlob(blob => {
         try {
             const item = new ClipboardItem({'image/png': blob});
-            navigator.clipboard.write([item]).then(() => toast('Imagen copiada'));
-        } catch (e) {
-            toast('Tu navegador no lo permite');
-        }
+            navigator.clipboard.write([item]).then(() => toast(t('toast_img_copied')));
+        } catch (e) { toast(t('toast_not_supported')); }
     });
 });
 
@@ -1525,15 +1658,9 @@ function applyZoom() {
     canvasContainer.style.transform = `scale(${state.zoom})`;
     document.getElementById('zoomLabel').textContent = Math.round(state.zoom * 100) + '%';
 }
-document.getElementById('zoomIn').addEventListener('click', () => {
-    state.zoom = Math.min(3, state.zoom + 0.25); applyZoom();
-});
-document.getElementById('zoomOut').addEventListener('click', () => {
-    state.zoom = Math.max(0.4, state.zoom - 0.25); applyZoom();
-});
-document.getElementById('zoomReset').addEventListener('click', () => {
-    state.zoom = 1; applyZoom();
-});
+document.getElementById('zoomIn').addEventListener('click', () => { state.zoom = Math.min(3, state.zoom + 0.25); applyZoom(); });
+document.getElementById('zoomOut').addEventListener('click', () => { state.zoom = Math.max(0.4, state.zoom - 0.25); applyZoom(); });
+document.getElementById('zoomReset').addEventListener('click', () => { state.zoom = 1; applyZoom(); });
 
 /* ==========================================================
    VISTA
@@ -1554,11 +1681,8 @@ document.getElementById('togglePreviewBtn').addEventListener('click', e => {
    PANTALLA COMPLETA
    ========================================================== */
 document.getElementById('fullscreenBtn').addEventListener('click', () => {
-    if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => toast('No disponible'));
-    } else {
-        document.exitFullscreen();
-    }
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => toast(t('toast_fs_unavailable')));
+    else document.exitFullscreen();
 });
 
 /* ==========================================================
@@ -1580,22 +1704,17 @@ function playBeep(freq = 500, dur = 0.05) {
         osc.stop(audioCtx.currentTime + dur);
     } catch (e) {}
 }
-
 document.getElementById('soundBtn').addEventListener('click', e => {
     state.soundOn = !state.soundOn;
     e.target.textContent = state.soundOn ? '🔊' : '🔇';
-    toast('Sonidos: ' + (state.soundOn ? 'ON' : 'OFF'));
+    toast(t('toast_sound') + (state.soundOn ? 'ON' : 'OFF'));
 });
 
 /* ==========================================================
-   MODAL DE AYUDA
+   MODAL
    ========================================================== */
-document.getElementById('helpBtn').addEventListener('click', () => {
-    document.getElementById('helpModal').classList.add('show');
-});
-document.getElementById('closeHelp').addEventListener('click', () => {
-    document.getElementById('helpModal').classList.remove('show');
-});
+document.getElementById('helpBtn').addEventListener('click', () => document.getElementById('helpModal').classList.add('show'));
+document.getElementById('closeHelp').addEventListener('click', () => document.getElementById('helpModal').classList.remove('show'));
 document.getElementById('helpModal').addEventListener('click', e => {
     if (e.target.id === 'helpModal') e.target.classList.remove('show');
 });
@@ -1615,23 +1734,13 @@ function toast(msg) {
    ATAJOS
    ========================================================== */
 document.addEventListener('keydown', e => {
-    if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) {
-        e.preventDefault(); undo(); return;
-    }
-    if ((e.ctrlKey && e.key.toLowerCase() === 'y') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z')) {
-        e.preventDefault(); redo(); return;
-    }
-    if (e.ctrlKey && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        document.getElementById('saveBtn').click(); return;
-    }
+    if (e.ctrlKey && e.key.toLowerCase() === 'z' && !e.shiftKey) { e.preventDefault(); undo(); return; }
+    if ((e.ctrlKey && e.key.toLowerCase() === 'y') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z')) { e.preventDefault(); redo(); return; }
+    if (e.ctrlKey && e.key.toLowerCase() === 's') { e.preventDefault(); document.getElementById('saveBtn').click(); return; }
     if (e.target.tagName === 'INPUT') return;
 
     const k = e.key.toLowerCase();
-    const toolMap = {
-        b: 'pencil', e: 'eraser', g: 'fill', i: 'eyedropper',
-        l: 'line', r: 'rect', f: 'frect', c: 'circle', v: 'fcircle'
-    };
+    const toolMap = { b: 'pencil', e: 'eraser', g: 'fill', i: 'eyedropper', l: 'line', r: 'rect', f: 'frect', c: 'circle', v: 'fcircle' };
     if (toolMap[k] && !e.shiftKey) {
         const btn = document.querySelector(`.tool-btn[data-tool="${toolMap[k]}"]`);
         if (btn) btn.click();
@@ -1655,44 +1764,36 @@ document.addEventListener('keydown', e => {
    ========================================================== */
 function saveAuto() {
     try {
-        const data = {gridSize: state.gridSize, pixels: pixels};
-        localStorage.setItem('pixelstudio_autosave', JSON.stringify(data));
+        localStorage.setItem('pixelstudio_autosave', JSON.stringify({gridSize: state.gridSize, pixels: pixels}));
     } catch (e) {}
 }
-
 function loadAuto() {
     try {
         const raw = localStorage.getItem('pixelstudio_autosave');
         if (!raw) return false;
         const data = JSON.parse(raw);
         if (!data.pixels || !data.gridSize) return false;
-        if (!confirm('¿Restaurar tu último dibujo guardado automáticamente?')) return false;
+        if (!confirm(t('confirm_restore'))) return false;
         state.gridSize = data.gridSize;
         cellSize = BASE_SIZE / state.gridSize;
         pixels = data.pixels;
-        history = [];
-        historyIndex = -1;
-        lastColorCount = -1;
-        pushHistory();
-        render();
-        updateGridButtons();
-        document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
-        toast('Autoguardado restaurado');
+        history = []; historyIndex = -1; lastColorCount = -1;
+        pushHistory(); render(); updateGridButtons();
+        document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + state.gridSize + '×' + state.gridSize;
+        toast(t('toast_restored'));
         return true;
     } catch (e) { return false; }
 }
-
 document.getElementById('clearLocalBtn').addEventListener('click', () => {
-    if (confirm('¿Borrar el autoguardado?')) {
+    if (confirm(t('confirm_clear_local'))) {
         localStorage.removeItem('pixelstudio_autosave');
-        toast('Autoguardado borrado');
+        toast(t('toast_local_cleared'));
     }
 });
-
 document.getElementById('clearRecentBtn').addEventListener('click', () => {
     state.recentColors = [];
     renderRecentColors();
-    toast('Colores recientes borrados');
+    toast(t('toast_recent_cleared'));
 });
 
 /* ==========================================================
@@ -1708,29 +1809,40 @@ function loadFromUrl() {
         state.gridSize = decoded.g;
         cellSize = BASE_SIZE / state.gridSize;
         pixels = decoded.p;
-        history = [];
-        historyIndex = -1;
-        lastColorCount = -1;
-        pushHistory();
-        render();
-        updateGridButtons();
-        document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
-        toast('Dibujo cargado desde URL');
+        history = []; historyIndex = -1; lastColorCount = -1;
+        pushHistory(); render(); updateGridButtons();
+        document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + state.gridSize + '×' + state.gridSize;
+        toast(t('toast_url_loaded'));
         return true;
-    } catch (e) {
-        console.error(e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
-document.addEventListener('contextmenu', e => {
-    if (e.target === canvas) e.preventDefault();
+document.addEventListener('contextmenu', e => { if (e.target === canvas) e.preventDefault(); });
+
+/* ==========================================================
+   SELECCIÓN DE IDIOMA
+   ========================================================== */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
 });
 
 /* ==========================================================
    ARRANQUE
    ========================================================== */
 window.addEventListener('load', () => {
+    // Cargar idioma guardado
+    try {
+        const savedLang = localStorage.getItem('pixelstudio_lang');
+        if (savedLang && I18N[savedLang]) currentLang = savedLang;
+        else {
+            // Auto-detectar según el navegador
+            const nav = (navigator.language || 'es').slice(0, 2).toLowerCase();
+            if (I18N[nav]) currentLang = nav;
+        }
+    } catch(e) {}
+    applyTranslations();
+
+    // Cargar dibujo
     const loadedUrl = loadFromUrl();
     if (!loadedUrl) {
         const loaded = loadAuto();
@@ -1746,12 +1858,11 @@ window.addEventListener('load', () => {
     updateGridButtons();
     updateUndoRedo();
     updateColorsCounter(false);
-    document.getElementById('sizeLabel').textContent = `Lienzo: ${state.gridSize}×${state.gridSize}`;
+    document.getElementById('sizeLabel').textContent = t('s_size') + ' ' + state.gridSize + '×' + state.gridSize;
     applyZoom();
 });
 
 window.addEventListener('beforeunload', saveAuto);
-
 </script>
 </body>
 </html>
